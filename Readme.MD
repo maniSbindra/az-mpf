@@ -166,15 +166,15 @@ INFO[0051] Resource group deletion initiated successfully...
 The [launch.json](.vscode/launch.json) file has been configured to debug the application locally. The values for the required arguments is passed vai the .env.sh file, which is not checked in. The following is a sample .env.sh file:
 
 ```shell
-export SUBSCRIPTION_ID="YOUR_SUBSCRIPTION_ID"
-export TENANT_ID="YOUR_TENANT_ID"
-# export TEST_DEPLOYMENT_NAME_PFX="testDeploy"
-# export TEST_DEPLOYMENT_RESOURCE_GROUP_NAME_PFX="testdeployrg"
-export SP_CLIENT_ID="YOUR_SP_CLIENT_ID"
-export SP_CLIENT_SECRET="YOUR_SP_CLIENT_SECRET"
-export SP_OBJECT_ID="YOUR_SP_OBJECT_ID"
-export TEMPLATE_FILE="./templates/samples/aks.json"
-export PARAMETERS_FILE="./templates/samples/aks-parameters.json"
+SUBSCRIPTION_ID="YOUR_SUBSCRIPTION_ID"
+TENANT_ID="YOUR_TENANT_ID"
+# TEST_DEPLOYMENT_NAME_PFX="testDeploy"
+# TEST_DEPLOYMENT_RESOURCE_GROUP_NAME_PFX="testdeployrg"
+SP_CLIENT_ID="YOUR_SP_CLIENT_ID"
+SP_CLIENT_SECRET="YOUR_SP_CLIENT_SECRET"
+SP_OBJECT_ID="YOUR_SP_OBJECT_ID"
+TEMPLATE_FILE="./templates/samples/aks.json"
+PARAMETERS_FILE="./templates/samples/aks-parameters.json"
 ```
 
 These values need to be modified to match your environment. You can also modify the launch.json to change the logging verbosity, which is debug by default while debugging.

@@ -26,7 +26,7 @@
             // "env": {"LOG_LEVEL": "error"},
             // "env": {"LOG_LEVEL": "info"},
             "envFile": "${workspaceFolder}/.env.sh",
-            "args": ["-subscriptionID","${env:SUBSCRIPTION_ID}","-resourceGroupName","${env:TEST_DEPLOYMENT_RESOURCE_GROUP_NAME}", "-deploymentNamePfx","${env:TEST_DEPLOYMENT_NAME_PFX}", "-spClientID","${env:SP_CLIENT_ID}","-spClientSecret","${env:SP_CLIENT_SECRET}","-tenantID","${env:TENANT_ID}", "-templateFile","${env:TEMPLATE_FILE}","-parametersFile","${env:PARAMETERS_FILE}"]
+            "args": ["-subscriptionID","${env:SUBSCRIPTION_ID}", "-spClientID","${env:SP_CLIENT_ID}","-spClientSecret","${env:SP_CLIENT_SECRET}","-tenantID","${env:TENANT_ID}", "-templateFile","${env:TEMPLATE_FILE}","-parametersFile","${env:PARAMETERS_FILE}"]
             // "args": ["-jsonOutput","true","-subscriptionID","${env:SUBSCRIPTION_ID}","-resourceGroupName","${env:TEST_DEPLOYMENT_RESOURCE_GROUP_NAME}", "-deploymentNamePfx","${env:TEST_DEPLOYMENT_NAME_PFX}", "-spClientID","${env:SP_CLIENT_ID}","-spClientSecret","${env:SP_CLIENT_SECRET}","-tenantID","${env:TENANT_ID}", "-templateFile","${env:TEMPLATE_FILE}","-parametersFile","${env:PARAMETERS_FILE}"]
         }
     ]
