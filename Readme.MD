@@ -39,7 +39,7 @@ Following is the detailed flow of how this utility works:
 
 ## Installation
 
-You can download the latest release for your platform from the releases link.
+You can download the latest version for your platform from the [releases](https://github.com/maniSbindra/az-mpf/releases/) link.
 
 ## Building Locally
 
