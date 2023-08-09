@@ -25,12 +25,12 @@ The overview of how this utility works is as follows:
 ![Overview](docs/images/overview.png)
 
 Following is the detailed flow of how this utility works:
-* The key parameters the utility needs are the Service Principal details, the ARM template and parameters file.
-* The utility remove any existing Role Assignments for provided Service Principal
+* The key parameters the utility needs are the **Service Principal details** (Client ID, Secret and Object ID), the ARM template and parameters file.
+* The utility **removes any existing Role Assignments for provided Service Principal**
 * A new Resource Group and Custom Role (with no assigned permissions) are created
 * The Service Principal (SP) is assigned the new custom role
-* For the above steps the utitity uses the default Azure CLI credentials which needs to have permissions to create custom role, resource group, and role assignments 
-* For the following sub steps the **Service Principal Credentials** are used. These sub steps are retried till the deployment succeeds
+* For the above steps the utitity uses the **default Azure CLI credentials** which needs to have permissions to create custom role, resource group, and role assignments
+* For the following sub steps the **Service Principal Credentials** are used. These sub steps are re-tried till the deployment succeeds
   * Attempt to deploy ARM template using template and parameters file
   * Check if Authorization errors have occured. Parse Authorization errors to fetch the scopes and corresponding permissions for which errors have occured. The [authorizationErrorParser Tests](./authorizationErrorParser_test.go) provide details of the kinds of Authorization erros typically received.
   * Add the missing permissions to custom Role.
@@ -44,6 +44,24 @@ You can download the latest version for your platform from the [releases](https:
 ## Building Locally
 
 You can also build locally by cloning this repo and running `make build`.
+
+## Debugging Locally
+
+The [launch.json](.vscode/launch.json) file has been configured to debug the application locally. The values for the required arguments are passed via the .env.sh file. The following is a sample .env.sh file:
+
+```shell
+SUBSCRIPTION_ID="YOUR_SUBSCRIPTION_ID"
+TENANT_ID="YOUR_TENANT_ID"
+# TEST_DEPLOYMENT_NAME_PFX="testDeploy"
+# TEST_DEPLOYMENT_RESOURCE_GROUP_NAME_PFX="testdeployrg"
+SP_CLIENT_ID="YOUR_SP_CLIENT_ID"
+SP_CLIENT_SECRET="YOUR_SP_CLIENT_SECRET"
+SP_OBJECT_ID="YOUR_SP_OBJECT_ID"
+TEMPLATE_FILE="./templates/samples/aks.json"
+PARAMETERS_FILE="./templates/samples/aks-parameters.json"
+```
+
+These values need to be modified to match your environment. You can also modify the launch.json to change the logging verbosity, which is debug by default while debugging.
 
 ## Usage Details
 
@@ -160,24 +178,6 @@ INFO[0048] Role definition deleted successfully
 INFO[0051] Resource group deletion initiated successfully...
 
 ```
-
-## Running / Debugging Locally
-
-The [launch.json](.vscode/launch.json) file has been configured to debug the application locally. The values for the required arguments is passed vai the .env.sh file, which is not checked in. The following is a sample .env.sh file:
-
-```shell
-SUBSCRIPTION_ID="YOUR_SUBSCRIPTION_ID"
-TENANT_ID="YOUR_TENANT_ID"
-# TEST_DEPLOYMENT_NAME_PFX="testDeploy"
-# TEST_DEPLOYMENT_RESOURCE_GROUP_NAME_PFX="testdeployrg"
-SP_CLIENT_ID="YOUR_SP_CLIENT_ID"
-SP_CLIENT_SECRET="YOUR_SP_CLIENT_SECRET"
-SP_OBJECT_ID="YOUR_SP_OBJECT_ID"
-TEMPLATE_FILE="./templates/samples/aks.json"
-PARAMETERS_FILE="./templates/samples/aks-parameters.json"
-```
-
-These values need to be modified to match your environment. You can also modify the launch.json to change the logging verbosity, which is debug by default while debugging.
 
 ## Complex ARM template sample
 Let us look at the detailed output of a more complex ARM template. The following is the command used to run the sample:
