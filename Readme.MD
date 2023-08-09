@@ -33,7 +33,7 @@ Following is the detailed flow of how this utility works:
 * For the following sub steps the **Service Principal Credentials** are used. These sub steps are re-tried till the deployment succeeds
   * Attempt to deploy ARM template using template and parameters file
   * Check if Authorization errors have occured. Parse Authorization errors to fetch the scopes and corresponding permissions for which errors have occured. The [authorizationErrorParser Tests](./authorizationErrorParser_test.go) provide details of the kinds of Authorization erros typically received.
-  * Add the missing permissions to custom Role.
+  * Add the missing permissions to custom Role. This sub step uses **default Azure CLI credentials** to update role permissions.
 * Print the Permissions. There are options provided to view the resource wise break up of permissions and also to export the result in JSON format
 * Cleanup Role Assignments, Custom Role and Resource Group created by the utility.
 
