@@ -68,20 +68,21 @@ These values need to be modified to match your environment. You can also modify 
 ### Parameters
 Parameters can be supplied to the utility either via command line or via environment variables. The following parameters are supported:
 
-| Parameter                  | Environment Variable                  | Required / Optional | Description                                     |
-|----------------------------|---------------------------------------|--------------------|-------------------------------------------------|
-| subscriptionID             | SUBSCRIPTION_ID                       | Required           |                                                 |
-| tenantID                   | TENANT_ID                             | Required           |                                                 |
-| servicePrincipalClientID   | SP_CLIENT_ID                          | Required           |                                                 |
-| servicePrincipalObjectID   | SP_OBJECT_ID                          | Required           |  Note this is the SP Object id and is different from the Client ID                                               |
-| servicePrincipalClientSecret | SP_CLIENT_SECRET                      | Required           |                                                 |
-| templateFilePath           | TEMPLATE_FILE                         | Required           | ARM template file with path                     |
-| parametersFilePath         | PARAMETERS_FILE                       | Required           | ARM template parameters file with path          |
-| resourceGroupNamePfx       | TEST_DEPLOYMENT_RESOURCE_GROUP_NAME_PFX | Optional        | Prefix for the resource group name. If not provided, default prefix is testdeployrg |
-| deploymentNamePfx          | TEST_DEPLOYMENT_NAME_PFX              | Optional           | Prefix for the deployment name. If not provided, default prefix is testDeploy |
-| showDetailedOutput         | N/A                                   | Optional           | If set to true, the output shows details of permissions resource wise as well |
-| jsonOutput                 | N/A                                   | Optional           | If set to true, the output is printed in JSON format |
-| location                   | N/A                                   | Optional           | Location for the resource group. If not provided, default location is eastus |
+| Parameter                  | Environment Variable           | Required / Optional | Description                                      |
+|--------------------------- | ------------------------------ | ------------------- | -----------------------------------------------  |
+| subscriptionID             | SUBSCRIPTION_ID                | Required            |                                                 |
+| tenantID                   | TENANT_ID                      | Required            |                                                 |
+| servicePrincipalClientID   | SP_CLIENT_ID                   | Required            |                                                 |
+| servicePrincipalObjectID   | SP_OBJECT_ID                   | Required            | Note this is the SP Object id and is different from the Client ID                                               |
+| servicePrincipalClientSecret | SP_CLIENT_SECRET             | Required            |                                                 |
+| templateFilePath           | TEMPLATE_FILE                  | Required            | ARM template file with path                     |
+| parametersFilePath         | PARAMETERS_FILE                | Required            | ARM template parameters file with path          |
+| resourceGroupNamePfx       | TEST_DEPLOYMENT_RESOURCE_GROUP_NAME_PFX | Optional     | Prefix for the resource group name. If not provided, default prefix is testdeployrg |
+| deploymentNamePfx          | TEST_DEPLOYMENT_NAME_PFX       | Optional            | Prefix for the deployment name. If not provided, default prefix is testDeploy |
+| showDetailedOutput         | N/A                            | Optional            | If set to true, the output shows details of permissions resource wise as well |
+| jsonOutput                 | N/A                            | Optional            | If set to true, the output is printed in JSON format |
+| location                   | N/A                            | Optional            | Location for the resource group. If not provided, default location is eastus |
+
 
 ### Detailed output
 The utility by default prints the permissions assigned to the SP at resource group level. It is also possible to view additional details of the permissions at a resource level. The following is a sample of detailed output:
