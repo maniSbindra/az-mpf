@@ -96,6 +96,45 @@ func readJson(path string) (map[string]interface{}, error) {
 // 	return &resp.DeploymentValidateResult, nil
 // }
 
+// Get parameters in standard format that is without the schema, contentVersion and parameters fields
+func getParametersInStandardFormat(parameters map[string]interface{}) map[string]interface{} {
+	// convert from
+	// {
+	// 	"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+	// 	"contentVersion": "1.0.0.0",
+	// 	"parameters": {
+	// 	  "adminUsername": {
+	// 		"value": "GEN-UNIQUE"
+	// 	  },
+	// 	  "adminPasswordOrKey": {
+	// 		"value": "GEN-PASSWORD"
+	// 	  },
+	// 	  "dnsLabelPrefix": {
+	// 		"value": "GEN-UNIQUE"
+	// 	  }
+	// 	}
+	//   }
+
+	// convert to
+	// {
+	// 	  "adminUsername": {
+	// 		"value": "GEN-UNIQUE"
+	// 	  },
+	// 	  "adminPasswordOrKey": {
+	// 		"value": "GEN-PASSWORD"
+	// 	  },
+	// 	  "dnsLabelPrefix": {
+	// 		"value": "GEN-UNIQUE"
+	// 	  }
+	// 	}
+	if parameters["$schema"] != nil {
+
+		return parameters["parameters"].(map[string]interface{})
+
+	}
+	return parameters
+}
+
 func (m *MinPermFinder) DeployARMTemplate(deploymentName string) error {
 
 	// jsonData, err := json.Marshal(properties)
@@ -120,6 +159,9 @@ func (m *MinPermFinder) DeployARMTemplate(deploymentName string) error {
 		return err
 	}
 
+	// convert parameters to standard format
+	parameters = getParametersInStandardFormat(parameters)
+
 	fullTemplate := map[string]interface{}{
 		"properties": map[string]interface{}{
 			"mode":       "Incremental",
@@ -136,6 +178,9 @@ func (m *MinPermFinder) DeployARMTemplate(deploymentName string) error {
 
 	fullTemplateJSONString := string(fullTemplateJSONBytes)
 
+	log.Debugln()
+	log.Debugln(fullTemplateJSONString)
+	log.Debugln()
 	// create JSON body with template and parameters
 
 	url := fmt.Sprintf("https://management.azure.com/subscriptions/%s/resourcegroups/%s/providers/Microsoft.Resources/deployments/%s?api-version=2020-10-01", m.SubscriptionID, m.ResourceGroupName, deploymentName)
