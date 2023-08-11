@@ -82,6 +82,31 @@ These values need to be modified to match your environment. You can also modify 
 
 ## Usage Details
 
+### Basic Usage
+```shell
+# Login using az CLI if not already logged in
+# az login
+
+export SUBSCRIPTION_ID="YOUR_SUBSCRIPTION_ID"
+export TENANT_ID="YOUR_TENANT_ID"
+export SP_CLIENT_ID="YOUR_SP_CLIENT_ID"
+export SP_CLIENT_SECRET="YOUR_SP_CLIENT_SECRET"
+export SP_OBJECT_ID="YOUR_SP_OBJECT_ID" #Your Service Principal Object ID
+
+
+# Note! modify the curl command below to use your platform and the latest version of az-mpf 
+curl -L https://github.com/maniSbindra/az-mpf/releases/download/v0.2.1/az-mpf-darwin-arm64 -o az-mpf
+chmod +x ./az-mpf
+
+# Download the template and parameters file to same directory
+curl -L https://raw.githubusercontent.com/maniSbindra/az-mpf/main/templates/samples/aks.json -o ./aks.json
+curl -L https://raw.githubusercontent.com/maniSbindra/az-mpf/main/templates/samples/aks-parameters.json -o ./aks-parameters.json
+
+# Run az-mpf for the parameter file
+
+ ./az-mpf -subscriptionID=${SUBSCRIPTION_ID} -spClientID="${SP_CLIENT_ID}" -spObjectID=${SP_OBJECT_ID} -spClientSecret="${SP_CLIENT_SECRET}" -tenantID="${TENANT_ID}" -templateFile="./aks.json" -parametersFile="./aks-parameters.json" -showDetailedOutput
+```
+
 ### Parameters
 Parameters can be supplied to the utility either via command line or via environment variables. The following parameters are supported:
 
