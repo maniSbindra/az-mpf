@@ -44,13 +44,13 @@ You can download the latest version for your platform from the [releases](https:
 For example, to download the latest version for Windows:
 
 ```shell
-curl -L https://github.com/maniSbindra/az-mpf/releases/download/v0.2.0/az-mpf-windows-amd64.exe -o az-mpf.exe
+curl -L https://github.com/maniSbindra/az-mpf/releases/download/v0.2.1/az-mpf-windows-amd64.exe -o az-mpf.exe
 ```
 
 And for Mac Arm64:
   
 ```shell
-curl -L https://github.com/maniSbindra/az-mpf/releases/download/v0.2.0/az-mpf-darwin-arm64 -o az-mpf
+curl -L https://github.com/maniSbindra/az-mpf/releases/download/v0.2.1/az-mpf-darwin-arm64 -o az-mpf
 ``` 
 
 ## Building Locally
