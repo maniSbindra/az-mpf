@@ -19,9 +19,12 @@ Microsoft.Resources/deployments/write
 
 Is is also possible to additionally view detailed resource level permissions required as shown in the Samples section below.
 
+The blog post [Figuring out the Minimum Permissions Required to Deploy an Azure ARM Template](https://medium.com/@maninder.bindra/figuring-out-the-minimum-permissions-required-to-deploy-an-azure-arm-template-c36f43e3d5d3) provides a more contextual usage scenario for az-mpf.
+
 ## How It works
 
 The overview of how this utility works is as follows:
+
 ![Overview](docs/images/overview.png)
 
 Following is the detailed flow of how this utility works:
@@ -44,12 +47,14 @@ You can download the latest version for your platform from the [releases](https:
 For example, to download the latest version for Windows:
 
 ```shell
+# Please change version in the URL to the latest version
 curl -L https://github.com/maniSbindra/az-mpf/releases/download/v0.2.1/az-mpf-windows-amd64.exe -o az-mpf.exe
 ```
 
 And for Mac Arm64:
   
 ```shell
+# Please change version in the URL to the latest version
 curl -L https://github.com/maniSbindra/az-mpf/releases/download/v0.2.1/az-mpf-darwin-arm64 -o az-mpf
 ``` 
 
