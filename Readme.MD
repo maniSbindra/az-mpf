@@ -53,24 +53,6 @@ And for Mac Arm64:
 curl -L https://github.com/maniSbindra/az-mpf/releases/download/v0.1.0/az-mpf-darwin-arm64 -o az-mpf
 ``` 
 
-## Format of the Template Parameters File
-
-The template parameters json file needs to be in the following format (**without the schema, contentVersion and parameters sections**):
-  
-```json
-{
-      "adminUsername": {
-        "value": "manitestcladuser"
-      },
-      "adminPasswordOrKey": {
-        "value": "27B61244-5594-4283-92C0-B5E8F5CEFDB3"
-      },
-      "dnsLabelPrefix": {
-        "value": "tmpdnsmanirstdm2"
-      }
-}
-```
-
 ## Building Locally
 
 You can also build locally by cloning this repo and running `make build`.
