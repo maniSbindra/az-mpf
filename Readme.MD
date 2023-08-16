@@ -19,7 +19,7 @@ Microsoft.Resources/deployments/write
 
 Is is also possible to additionally view detailed resource level permissions required as shown in the Samples section below.
 
-The blog post [Figuring out the Minimum Permissions Required to Deploy an Azure ARM Template](https://medium.com/@maninder.bindra/figuring-out-the-minimum-permissions-required-to-deploy-an-azure-arm-template-c36f43e3d5d3) provides a more contextual usage scenario for az-mpf.
+The blog post [Figuring out the Minimum Permissions Required to Deploy an Azure ARM Template](https://medium.com/microsoftazure/figuring-out-the-minimum-permissions-required-to-deploy-an-azure-arm-template-d1c1e74092fa) provides a more contextual usage scenario for az-mpf.
 
 ## How It works
 
