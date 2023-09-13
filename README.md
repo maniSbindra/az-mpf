@@ -6,7 +6,7 @@ Sample output of this utility when deploying an [ARM template](./templates/sampl
 
 ```shell
 # Text output
-./az-mpf -subscriptionID=${SUBSCRIPTION_ID} -spClientID="${SP_CLIENT_ID}" -spObjectID=${SP_OBJECT_ID} -spClientSecret="${SP_CLIENT_SECRET}" -tenantID="${TENANT_ID}" -templateFile="./templates/samples/aks.json" -parametersFile="./templates/samples/aks-parameters.json"
+az mpf --subscription-id=${SUBSCRIPTION_ID} --service-principal-client-id="${SP_CLIENT_ID}" --service-principal-object-id=${SP_OBJECT_ID} --service-principal-client-secret="${SP_CLIENT_SECRET}" --tenant-id="${TENANT_ID}" --template-file="./templates/samples/aks.json" --parameters-file="./templates/samples/aks-parameters.json"
 ------------------------------------------------------------------------------------------------------------------------------------------
 Permissions Assigned to Service Principal for Resource Group:  /subscriptions/SSSSSSSS-SSSS-SSSS-SSSS-SSSSSSSSSSSS/resourceGroups/testdeployrg-IG5UtHN
 ------------------------------------------------------------------------------------------------------------------------------------------
@@ -28,6 +28,7 @@ The overview of how this utility works is as follows:
 ![Overview](docs/images/overview.png)
 
 Following is the detailed flow of how this utility works:
+
 * The key parameters the utility needs are the **Service Principal details** (Client ID, Secret and Object ID), the ARM template and parameters file.
 * The utility **removes any existing Role Assignments for provided Service Principal**
 * A new Resource Group and Custom Role (with no assigned permissions) are created
@@ -47,16 +48,8 @@ You can download the latest version for your platform from the [releases](https:
 For example, to download the latest version for Windows:
 
 ```shell
-# Please change version in the URL to the latest version
-curl -L https://github.com/maniSbindra/az-mpf/releases/download/v0.2.1/az-mpf-windows-amd64.exe -o az-mpf.exe
+curl -sL https://raw.githubusercontent.com/manisbindra/az-mpf/main/install.sh | bash
 ```
-
-And for Mac Arm64:
-  
-```shell
-# Please change version in the URL to the latest version
-curl -L https://github.com/maniSbindra/az-mpf/releases/download/v0.2.1/az-mpf-darwin-arm64 -o az-mpf
-``` 
 
 ## Building Locally
 
@@ -83,6 +76,7 @@ These values need to be modified to match your environment. You can also modify 
 ## Usage Details
 
 ### Basic Usage
+
 ```shell
 # Login using az CLI if not already logged in
 # az login
@@ -93,44 +87,43 @@ export SP_CLIENT_ID="YOUR_SP_CLIENT_ID"
 export SP_CLIENT_SECRET="YOUR_SP_CLIENT_SECRET"
 export SP_OBJECT_ID="YOUR_SP_OBJECT_ID" #Your Service Principal Object ID
 
-
-# Note! modify the curl command below to use your platform and the latest version of az-mpf 
-curl -L https://github.com/maniSbindra/az-mpf/releases/download/v0.2.1/az-mpf-darwin-arm64 -o az-mpf
-chmod +x ./az-mpf
+# Install the tool
+curl -sL https://raw.githubusercontent.com/maniSbindra/az-mpf/main/install.sh | bash
 
 # Download the template and parameters file to same directory
 curl -L https://raw.githubusercontent.com/maniSbindra/az-mpf/main/templates/samples/aks.json -o ./aks.json
 curl -L https://raw.githubusercontent.com/maniSbindra/az-mpf/main/templates/samples/aks-parameters.json -o ./aks-parameters.json
 
 # Run az-mpf for the parameter file
-
- ./az-mpf -subscriptionID=${SUBSCRIPTION_ID} -spClientID="${SP_CLIENT_ID}" -spObjectID=${SP_OBJECT_ID} -spClientSecret="${SP_CLIENT_SECRET}" -tenantID="${TENANT_ID}" -templateFile="./aks.json" -parametersFile="./aks-parameters.json" -showDetailedOutput
+az mpf --subscription-id=${SUBSCRIPTION_ID} --service-principal-client-id="${SP_CLIENT_ID}" --service-principal-object-id=${SP_OBJECT_ID} --service-principal-client-secret="${SP_CLIENT_SECRET}" --tenant-id="${TENANT_ID}" --template-file="./aks.json" --parameters-file="./aks-parameters.json"
 ```
 
 ### Parameters
+
 Parameters can be supplied to the utility either via command line or via environment variables. The following parameters are supported:
 
 | Parameter                  | Environment Variable           | Required / Optional | Description                                      |
 |--------------------------- | ------------------------------ | ------------------- | -----------------------------------------------  |
-| subscriptionID             | SUBSCRIPTION_ID                | Required            |                                                 |
-| tenantID                   | TENANT_ID                      | Required            |                                                 |
-| servicePrincipalClientID   | SP_CLIENT_ID                   | Required            |                                                 |
-| servicePrincipalObjectID   | SP_OBJECT_ID                   | Required            | Note this is the SP Object id and is different from the Client ID                                               |
-| servicePrincipalClientSecret | SP_CLIENT_SECRET             | Required            |                                                 |
-| templateFilePath           | TEMPLATE_FILE                  | Required            | ARM template file with path                     |
-| parametersFilePath         | PARAMETERS_FILE                | Required            | ARM template parameters file with path          |
+| subscription-id            | SUBSCRIPTION_ID                | Required            |                                                 |
+| tenant-id                  | TENANT_ID                      | Required            |                                                 |
+| service-principal-client-id| SP_CLIENT_ID                   | Required            |                                                 |
+| service-principal-object-id| SP_OBJECT_ID                   | Required            | Note this is the SP Object id and is different from the Client ID                                               |
+| service-principal-client-secret | SP_CLIENT_SECRET             | Required            |                                                 |
+| template-file           | TEMPLATE_FILE                  | Required            | ARM template file with path                     |
+| parameters-file         | PARAMETERS_FILE                | Required            | ARM template parameters file with path          |
 | resourceGroupNamePfx       | TEST_DEPLOYMENT_RESOURCE_GROUP_NAME_PFX | Optional     | Prefix for the resource group name. If not provided, default prefix is testdeployrg |
 | deploymentNamePfx          | TEST_DEPLOYMENT_NAME_PFX       | Optional            | Prefix for the deployment name. If not provided, default prefix is testDeploy |
 | showDetailedOutput         | N/A                            | Optional            | If set to true, the output shows details of permissions resource wise as well |
 | jsonOutput                 | N/A                            | Optional            | If set to true, the output is printed in JSON format |
 | location                   | N/A                            | Optional            | Location for the resource group. If not provided, default location is eastus |
 
-
 ### Detailed output
+
 The utility by default prints the permissions assigned to the SP at resource group level. It is also possible to view additional details of the permissions at a resource level. The following is a sample of detailed output:
+
 ```shell
 # Detailed Text output
-./az-mpf -subscriptionID=${SUBSCRIPTION_ID} -spClientID="${SP_CLIENT_ID}" -spObjectID=${SP_OBJECT_ID} -spClientSecret="${SP_CLIENT_SECRET}" -tenantID="${TENANT_ID}" -templateFile="./templates/samples/aks.json" -parametersFile="./templates/samples/aks-parameters.json" -showDetailedOutput
+az mpf --subscription-id=${SUBSCRIPTION_ID} --service-principal-client-id="${SP_CLIENT_ID}" --service-principal-object-id=${SP_OBJECT_ID} --service-principal-client-secret="${SP_CLIENT_SECRET}" --tenant-id="${TENANT_ID}" --template-file="./templates/samples/aks.json" --parameters-file="./templates/samples/aks-parameters.json" --show-detailed-output
 ------------------------------------------------------------------------------------------------------------------------------------------
 Permissions Assigned to Service Principal for Resource Group:  /subscriptions/SSSSSSSS-SSSS-SSSS-SSSS-SSSSSSSSSSSS/resourceGroups/testdeployrg-Lep7SYp
 ------------------------------------------------------------------------------------------------------------------------------------------
@@ -156,9 +149,11 @@ Microsoft.Resources/deployments/write
 ```
 
 ### JSON Output which by default shows the details as well
+
 It is possible to also get the JSON output, which by default shows details as well. The following is a sample of JSON output:
+
 ```shell
-./az-mpf -subscriptionID=${SUBSCRIPTION_ID} -spClientID="${SP_CLIENT_ID}" -spObjectID=${SP_OBJECT_ID} -spClientSecret="${SP_CLIENT_SECRET}" -tenantID="${TENANT_ID}" -templateFile="./templates/samples/aks.json" -parametersFile="./templates/samples/aks-parameters.json" -jsonOutput
+az mpf --subscription-id=${SUBSCRIPTION_ID} --service-principal-client-id="${SP_CLIENT_ID}" --service-principal-object-id=${SP_OBJECT_ID} --service-principal-client-secret="${SP_CLIENT_SECRET}" --tenant-id="${TENANT_ID}" --template-file="./templates/samples/aks.json" --parameters-file="./templates/samples/aks-parameters.json" --json-output
 {
   "/subscriptions/SSSSSSSS-SSSS-SSSS-SSSS-SSSSSSSSSSSS/resourceGroups/testdeployrg-ZPWHSnh": [
     "Microsoft.ContainerService/managedClusters/read",
@@ -178,11 +173,12 @@ It is possible to also get the JSON output, which by default shows details as we
 ```
 
 ### Viewing info, warn or debug level logs
+
 By default the log level is error. More verbose logs can be viewed by setting the LOG_LEVEL environment variable to info, warn or debug. The following is a sample of info level logs:
 
 ```shell
 LOG_LEVEL=info ./az-mpf -subscriptionID=${SUBSCRIPTION_ID} -spClientID="${SP_CLIENT_ID}" -spObjectID=${SP_OBJECT_ID} -spClientSecret="${SP_CLIENT_SECRET}" -tenantID="${TENANT_ID}" -templateFile="./templates/samples/aks.json" -parametersFile="./templates/samples/aks-parameters.json"
- LOG_LEVEL=info ./az-mpf -subscriptionID=${SUBSCRIPTION_ID} -spClientID="${SP_CLIENT_ID}" -spObjectID=${SP_OBJECT_ID} -spClientSecret="${SP_CLIENT_SECRET}" -tenantID="${TENANT_ID}" -templateFile="./templates/samples/aks.json" -parametersFile="./templates/samples/aks-parameters.json"
+LOG_LEVEL=info ./az-mpf -subscriptionID=${SUBSCRIPTION_ID} -spClientID="${SP_CLIENT_ID}" -spObjectID=${SP_OBJECT_ID} -spClientSecret="${SP_CLIENT_SECRET}" -tenantID="${TENANT_ID}" -templateFile="./templates/samples/aks.json" -parametersFile="./templates/samples/aks-parameters.json"
 INFO[0004] Getting new Default API Bearer Token         
 INFO[0005] roleDefinitionResourceID: /subscriptions/SSSSSSSS-SSSS-SSSS-SSSS-SSSSSSSSSSSS/providers/Microsoft.Authorization/roleDefinitions/cef574b4-f3c1-4400-b6e8-82bb7fffe637 
 INFO[0005] Creating Resource Group: testdeployrg-TIhoxAy  
@@ -219,10 +215,10 @@ INFO[0041] Deployment status: Running
 INFO[0044] Cancelled deployment testDeploy-NWQUACu      
 INFO[0048] Role definition deleted successfully         
 INFO[0051] Resource group deletion initiated successfully...
-
 ```
 
 ## Complex ARM template sample
+
 Let us look at the detailed output of a more complex ARM template. The following is the command used to run the sample:
 
 ```shell
@@ -534,9 +530,3 @@ Microsoft.Network/privateDnsZones/virtualNetworkLinks/read
 Microsoft.Network/privateDnsZones/virtualNetworkLinks/write
 --------------
 ```
-
-
-
-
-
-
