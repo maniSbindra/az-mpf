@@ -183,9 +183,55 @@ func (m *MinPermFinder) DeployARMTemplate(deploymentName string) error {
 	log.Debugln()
 	// create JSON body with template and parameters
 
-	url := fmt.Sprintf("https://management.azure.com/subscriptions/%s/resourcegroups/%s/providers/Microsoft.Resources/deployments/%s?api-version=2020-10-01", m.SubscriptionID, m.ResourceGroupName, deploymentName)
-
 	client := &http.Client{}
+
+	create_empty_deployment := fmt.Sprintf("https://management.azure.com/subscriptions/%s/resourcegroups/%s/providers/Microsoft.Resources/deployments/%s?api-version=2020-10-01", m.SubscriptionID, m.ResourceGroupName, deploymentName)
+
+	log.Error("create_empty_deployment")
+	log.Error(create_empty_deployment)
+
+	empty_template, empty_template_err := readJson("./templates/samples/empty.json")
+	if empty_template_err != nil {
+		return empty_template_err
+	}
+	create_empty_deployment_template := map[string]interface{}{
+		"properties": map[string]interface{}{
+			"mode":       "Incremental",
+			"template":   empty_template,
+			"parameters": map[string]interface{}{},
+		},
+	}
+
+	// convert bodyJSON to string
+	create_empty_deployment_template_json_bytes, empty_template_err := json.Marshal(create_empty_deployment_template)
+	if empty_template_err != nil {
+		return empty_template_err
+	}
+
+	create_empty_deployment_template_string := string(create_empty_deployment_template_json_bytes)
+
+	req_deployment, err_deployment := http.NewRequest("PUT", create_empty_deployment, bytes.NewBufferString(create_empty_deployment_template_string))
+	if err_deployment != nil {
+		return err_deployment
+	}
+	req_deployment.Header.Set("Content-Type", "application/json")
+	req_deployment.Header.Set("Accept", "application/json")
+	req_deployment.Header.Set("User-Agent", "Go HTTP Client")
+
+	// add bearer token to header
+	req_deployment.Header.Add("Authorization", "Bearer "+bearerToken)
+
+	log.Errorf("%v", req_deployment)
+
+	// make req_deploymentuest
+	resp_deployment, err_deployment := client.Do(req_deployment)
+	if err_deployment != nil {
+		return err_deployment
+	}
+	log.Errorf("%v", resp_deployment)
+	defer resp_deployment.Body.Close()
+
+	url := fmt.Sprintf("https://management.azure.com/subscriptions/%s/resourcegroups/%s/providers/Microsoft.Resources/deployments/%s?api-version=2020-10-01", m.SubscriptionID, m.ResourceGroupName, deploymentName)
 
 	req, err := http.NewRequest("PUT", url, bytes.NewBufferString(fullTemplateJSONString))
 	if err != nil {
