@@ -145,8 +145,10 @@ func (m *MinPermFinder) CreateUpdateCustomRole(permissions []string) error {
 
 	scope := fmt.Sprintf("/subscriptions/%s/resourceGroups/%s", m.SubscriptionID, m.ResourceGroupName)
 
-	permissions = append(permissions, "Microsoft.Resources/deployments/*")
-	permissions = append(permissions, "Microsoft.Resources/subscriptions/operationresults/read")
+	if m.MPFMode == "whatif" {
+		permissions = append(permissions, "Microsoft.Resources/deployments/*")
+		permissions = append(permissions, "Microsoft.Resources/subscriptions/operationresults/read")
+	}
 
 	data := map[string]interface{}{
 		"assignableScopes": []string{
