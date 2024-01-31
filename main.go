@@ -34,6 +34,7 @@ type MinPermFinder struct {
 	TemplateFilePath     string
 	ParametersFilePath   string
 	DeploymentNamePfx    string
+	MPFMode              string
 
 	// ResourceGroupName value set from prefix
 	ResourceGroupName string
@@ -146,6 +147,7 @@ func main() {
 	// Then Retry creation of deployment. After deployment created repeat the loop for getDeployment, and then if no error exit
 	fnValidate := mpf.DeployARMTemplate
 	validationPhase := "createDeployment"
+
 	for {
 		// deploymentName += "1"
 
@@ -197,6 +199,11 @@ func main() {
 			return
 		}
 		log.Infoln("Permission/scope added to role successfully")
+	}
+
+	if mpf.MPFMode == "whatif" {
+		mpf.scopePermissionMap[mpf.ResourceGroupResourceID] = append(mpf.scopePermissionMap[mpf.ResourceGroupResourceID], "Microsoft.Resources/deployments/read")
+		mpf.scopePermissionMap[mpf.ResourceGroupResourceID] = append(mpf.scopePermissionMap[mpf.ResourceGroupResourceID], "Microsoft.Resources/deployments/write")
 	}
 
 	// Format and print result

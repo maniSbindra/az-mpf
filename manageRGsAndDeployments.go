@@ -135,6 +135,58 @@ func getParametersInStandardFormat(parameters map[string]interface{}) map[string
 	return parameters
 }
 
+func (m *MinPermFinder) CreateEmptyDeployment(client *http.Client, deploymentName string, bearerToken string) error {
+
+	deploymentUri := fmt.Sprintf("https://management.azure.com/subscriptions/%s/resourcegroups/%s/providers/Microsoft.Resources/deployments/%s?api-version=2020-10-01", m.SubscriptionID, m.ResourceGroupName, deploymentName)
+
+	log.Info("Creating empty deployment...")
+	log.Debug(deploymentUri)
+
+	emptyTempl, err := readJson("./templates/samples/empty.json")
+	if err != nil {
+		return err
+	}
+
+	emptyTemplStdFmtMap := map[string]interface{}{
+		"properties": map[string]interface{}{
+			"mode":       "Incremental",
+			"template":   emptyTempl,
+			"parameters": map[string]interface{}{},
+		},
+	}
+
+	// convert bodyJSON to string
+	emptyTemplJSONBytes, err := json.Marshal(emptyTemplStdFmtMap)
+	if err != nil {
+		return err
+	}
+
+	emptyDeploymentJSONString := string(emptyTemplJSONBytes)
+
+	deploymentReq, err := http.NewRequest("PUT", deploymentUri, bytes.NewBufferString(emptyDeploymentJSONString))
+	if err != nil {
+		return err
+	}
+	deploymentReq.Header.Set("Content-Type", "application/json")
+	deploymentReq.Header.Set("Accept", "application/json")
+	deploymentReq.Header.Set("User-Agent", "Go HTTP Client")
+
+	// add bearer token to header
+	deploymentReq.Header.Add("Authorization", "Bearer "+bearerToken)
+
+	log.Debugf("%v", deploymentReq)
+
+	// make deploymentReq
+	deploymentResp, err := client.Do(deploymentReq)
+	if err != nil {
+		return err
+	}
+	log.Debugf("%v", deploymentResp)
+	defer deploymentResp.Body.Close()
+
+	return nil
+}
+
 func (m *MinPermFinder) DeployARMTemplate(deploymentName string) error {
 
 	// jsonData, err := json.Marshal(properties)
@@ -185,55 +237,21 @@ func (m *MinPermFinder) DeployARMTemplate(deploymentName string) error {
 
 	client := &http.Client{}
 
-	create_empty_deployment := fmt.Sprintf("https://management.azure.com/subscriptions/%s/resourcegroups/%s/providers/Microsoft.Resources/deployments/%s?api-version=2020-10-01", m.SubscriptionID, m.ResourceGroupName, deploymentName)
-
-	log.Error("create_empty_deployment")
-	log.Error(create_empty_deployment)
-
-	empty_template, empty_template_err := readJson("./templates/samples/empty.json")
-	if empty_template_err != nil {
-		return empty_template_err
-	}
-	create_empty_deployment_template := map[string]interface{}{
-		"properties": map[string]interface{}{
-			"mode":       "Incremental",
-			"template":   empty_template,
-			"parameters": map[string]interface{}{},
-		},
+	var url, reqMethod string
+	if m.MPFMode == "whatif" {
+		log.Info("MPF mode is whatif, creating empty deployment....")
+		m.CreateEmptyDeployment(client, deploymentName, bearerToken)
+		url = fmt.Sprintf("https://management.azure.com/subscriptions/%s/resourcegroups/%s/providers/Microsoft.Resources/deployments/%s/whatIf?api-version=2021-04-01", m.SubscriptionID, m.ResourceGroupName, deploymentName)
+		reqMethod = "POST"
 	}
 
-	// convert bodyJSON to string
-	create_empty_deployment_template_json_bytes, empty_template_err := json.Marshal(create_empty_deployment_template)
-	if empty_template_err != nil {
-		return empty_template_err
+	if m.MPFMode == "fullDeployment" {
+		log.Info("MPF mode is fullDeployment, Proceeding to create resources....")
+		url = fmt.Sprintf("https://management.azure.com/subscriptions/%s/resourcegroups/%s/providers/Microsoft.Resources/deployments/%s?api-version=2020-10-01", m.SubscriptionID, m.ResourceGroupName, deploymentName)
+		reqMethod = "PUT"
 	}
 
-	create_empty_deployment_template_string := string(create_empty_deployment_template_json_bytes)
-
-	req_deployment, err_deployment := http.NewRequest("PUT", create_empty_deployment, bytes.NewBufferString(create_empty_deployment_template_string))
-	if err_deployment != nil {
-		return err_deployment
-	}
-	req_deployment.Header.Set("Content-Type", "application/json")
-	req_deployment.Header.Set("Accept", "application/json")
-	req_deployment.Header.Set("User-Agent", "Go HTTP Client")
-
-	// add bearer token to header
-	req_deployment.Header.Add("Authorization", "Bearer "+bearerToken)
-
-	log.Errorf("%v", req_deployment)
-
-	// make req_deploymentuest
-	resp_deployment, err_deployment := client.Do(req_deployment)
-	if err_deployment != nil {
-		return err_deployment
-	}
-	log.Errorf("%v", resp_deployment)
-	defer resp_deployment.Body.Close()
-
-	url := fmt.Sprintf("https://management.azure.com/subscriptions/%s/resourcegroups/%s/providers/Microsoft.Resources/deployments/%s?api-version=2020-10-01", m.SubscriptionID, m.ResourceGroupName, deploymentName)
-
-	req, err := http.NewRequest("PUT", url, bytes.NewBufferString(fullTemplateJSONString))
+	req, err := http.NewRequest(reqMethod, url, bytes.NewBufferString(fullTemplateJSONString))
 	if err != nil {
 		return err
 	}
@@ -252,13 +270,24 @@ func (m *MinPermFinder) DeployARMTemplate(deploymentName string) error {
 	}
 	defer resp.Body.Close()
 
+	var respBody string
+
 	// read response body
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
 
-	respBody := string(body)
+	respBody = string(body)
+
+	if m.MPFMode == "whatif" {
+		whatIfRespLoc := resp.Header.Get("Location")
+		log.Debugln(whatIfRespLoc)
+		respBody, err = m.GetWhatIfResp(whatIfRespLoc, bearerToken)
+		if err != nil {
+			return err
+		}
+	}
 
 	// fmt.Println(respBody)
 	log.Debugln(respBody)
@@ -275,6 +304,60 @@ func (m *MinPermFinder) DeployARMTemplate(deploymentName string) error {
 	}
 
 	return nil
+
+}
+
+func (m *MinPermFinder) GetWhatIfResp(whatIfRespLoc string, bearerToken string) (string, error) {
+
+	client := &http.Client{}
+
+	req, err := http.NewRequest("GET", whatIfRespLoc, nil)
+	if err != nil {
+		return "", err
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Accept", "application/json")
+	req.Header.Set("User-Agent", "Go HTTP Client")
+
+	// add bearer token to header
+	req.Header.Add("Authorization", "Bearer "+bearerToken)
+
+	var respBody string
+	for {
+		// make request
+		resp, err := client.Do(req)
+		if err != nil {
+			return "", err
+		}
+		defer resp.Body.Close()
+
+		// read response body
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return "", err
+		}
+
+		respBody = string(body)
+
+		// If response body is not empty, break out of loop
+		if respBody != "" {
+			log.Infoln("Whatif Results Response Received..")
+			break
+		}
+
+		log.Infoln("Whatif Results Response Body is empty, retrying in a bit...")
+		// Sleep for 1 seconds and try again
+		time.Sleep(1 * time.Second)
+
+		// fmt.Println(respBody)
+		// print response body
+	}
+
+	log.Debugln("Whatif Results Response Body:")
+	log.Debugln(respBody)
+
+	return respBody, nil
 
 }
 

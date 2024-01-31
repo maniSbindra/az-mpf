@@ -21,6 +21,7 @@ func (m *MinPermFinder) ParseFlags() error {
 		tenantID                     string
 		templateFilePath             string
 		parametersFilePath           string
+		mpfMode                      string
 
 		showDetailedOutput bool
 		jsonOutput         bool
@@ -40,6 +41,7 @@ func (m *MinPermFinder) ParseFlags() error {
 	flag.BoolVar(&showDetailedOutput, "showDetailedOutput", false, "Show detailed output")
 	flag.BoolVar(&jsonOutput, "jsonOutput", false, "Output results in JSON format")
 	flag.StringVar(&location, "location", "eastus", "Azure Region to deploy to")
+	flag.StringVar(&mpfMode, "mpfMode", "whatif", "Mode to run MinPermFinder in. Options: whatif, fullDeployment. default: whatif")
 
 	flag.Parse()
 
@@ -54,6 +56,7 @@ func (m *MinPermFinder) ParseFlags() error {
 	log.Debugln("tenantID:", tenantID)
 	log.Debugln("templateFilePath:", templateFilePath)
 	log.Debugln("parametersFilePath:", parametersFilePath)
+	log.Debugln("mpfMode:", mpfMode)
 
 	// // print values of environment variables
 	log.Debugln("SUBSCRIPTION_ID:", os.Getenv("SUBSCRIPTION_ID"))
@@ -127,6 +130,7 @@ func (m *MinPermFinder) ParseFlags() error {
 	m.ShowDetailedOutput = showDetailedOutput
 	m.JSONOutput = jsonOutput
 	m.Location = location
+	m.MPFMode = mpfMode
 
 	return nil
 
