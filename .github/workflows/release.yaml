@@ -1,42 +1,69 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
-# This workflow lets you compile your Go project using a SLSA3 compliant builder.
-# This workflow will generate a so-called "provenance" file describing the steps
-# that were performed to generate the final binary.
-# The project is an initiative of the OpenSSF (openssf.org) and is developed at
-# https://github.com/slsa-framework/slsa-github-generator.
-# The provenance file can be verified using https://github.com/slsa-framework/slsa-verifier.
-# For more information about SLSA and how it improves the supply-chain, visit slsa.dev.
-
-name: SLSA Go releaser
-on: [push]  
-# on:
-#   workflow_dispatch:
-#   release:
-#     types: [created]
+name: SLSA releaser
+on:
+  workflow_dispatch:
+  # push:
+  #   tags:
+  #     - "*"
 
 permissions: read-all
 
+env:
+  GO_VERSION: 1.19
+
 jobs:
-  # ========================================================================================================================================
-  #     Prerequesite: Create a .slsa-goreleaser.yml in the root directory of your project.
-  #       See format in https://github.com/slsa-framework/slsa-github-generator/blob/main/internal/builders/go/README.md#configuration-file
-  #=========================================================================================================================================
+  # Generate ldflags dynamically.
+  args:
+    runs-on: ubuntu-latest
+    outputs:
+      ldflags: ${{ steps.ldflags.outputs.value }}
+      go-binary-name: ${{ steps.build.outputs.go-binary-name }}
+    steps:
+      - id: checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          fetch-depth: 0
+      - id: ldflags
+        run: |
+          echo "value=$(./scripts/version-ldflags)" >> "$GITHUB_OUTPUT"
+  # Trusted builder.
   build:
     permissions:
-      id-token: write # To sign.
-      contents: write # To upload release assets.
-      actions: read   # To read workflow path.
-    # uses: slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@v1.4.0
-    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@v1.1.1
+      id-token: write
+      contents: write
+      actions: read
+    needs: args
+    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@v1.9.0 #7f4fdb871876c23e455853d694197440c5a91506
     with:
-      go-version: 1.19
-      evaluated-envs: "COMMIT_DATE:${{needs.args.outputs.commit-date}}, COMMIT:${{needs.args.outputs.commit}}, VERSION:${{needs.args.outputs.version}}, TREE_STATE:${{needs.args.outputs.tree-state}}"
-      compile-builder: true
-      # =============================================================================================================
-      #     Optional: For more options, see https://github.com/slsa-framework/slsa-github-generator#golang-projects
-      # =============================================================================================================
+      go-version: ${{ env.GO_VERSION }}
+      evaluated-envs: "VERSION_LDFLAGS:${{needs.args.outputs.ldflags}}"
 
+  verification:
+    needs:
+      - build
+    runs-on: ubuntu-latest
+    permissions: read-all
+    steps:
+      - name: Install the verifier
+        uses: slsa-framework/slsa-verifier/actions/installer@v2.4.1
+
+      - name: Download the artifact
+        uses: actions/download-artifact@6b208ae046db98c579e8a3aa621ab581ff575935 # v4.1.1
+        with:
+          name: "${{ needs.build.outputs.go-binary-name }}.intoto.jsonl"
+
+      - name: Download the artifact
+        uses: actions/download-artifact@6b208ae046db98c579e8a3aa621ab581ff575935 # v4.1.1
+        with:
+          name: ${{ needs.build.outputs.go-binary-name }}
+
+      - name: Verify assets
+        env:
+          ARTIFACT: ${{ needs.build.outputs.go-binary-name }}
+          ATT_FILE_NAME: "${{ needs.build.outputs.go-binary-name }}.intoto.jsonl"
+        run: |
+          set -euo pipefail
+
+          echo "Verifying $ARTIFACT using $ATT_FILE_NAME"
+          slsa-verifier verify-artifact --provenance-path "$ATT_FILE_NAME" \
+                                        --source-uri "github.com/$GITHUB_REPOSITORY" \
+                                        "$ARTIFACT"
