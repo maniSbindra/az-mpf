@@ -8,13 +8,13 @@ flags:
   - -trimpath
   - -tags=netgo
 
-goos: linux
-#   - linux
-#   - darwin
-#   - windows
-goarch: amd64
-#   - amd64
-#   - arm64
-binary: scorecard-{{ .Os }}-{{ .Arch }}
+# goos: linux
+# #   - linux
+# #   - darwin
+# #   - windows
+# goarch: amd64
+# #   - amd64
+# #   - arm64
+binary: az-mpf-{{ .Os }}-{{ .Arch }}
 ldflags:
   - -s {{ .Env.VERSION_LDFLAGS }}

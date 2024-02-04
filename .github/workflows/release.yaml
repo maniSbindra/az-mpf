@@ -1,14 +1,14 @@
 name: SLSA releaser
-# on: [push]
-on:
-  workflow_dispatch:
-  push:
-    tags:
-      - "*"
+on: [push]
+# on:
+#   workflow_dispatch:
+#   push:
+#     tags:
+#       - "*"
   # pull_request:
   #   branches: [ "main" ]
 
-permissions: read-all
+  permissions: read-all
 
 env:
   GO_VERSION: 1.19
