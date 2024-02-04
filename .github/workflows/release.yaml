@@ -1,12 +1,12 @@
 name: SLSA releaser
-on:
-  workflow_dispatch:
-  push:
-    tags:
-      - "*"
-    # branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+on: [push]
+# on:
+#   workflow_dispatch:
+#   push:
+#     tags:
+#       - "*"
+#   pull_request:
+#     branches: [ "main" ]
 
 permissions: read-all
 
@@ -39,7 +39,15 @@ jobs:
     with:
       go-version: 1.19
       evaluated-envs: "VERSION_LDFLAGS:${{needs.args.outputs.ldflags}}"
-
+    strategy:
+      matrix:
+        os:
+          - linux
+          - windows
+          - darwin
+        arch:
+          - amd64
+          - arm64
   verification:
     needs:
       - build
