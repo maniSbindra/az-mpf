@@ -2,17 +2,17 @@ version: 1
 env:
   - GO111MODULE=on
   # https://stackoverflow.com/a/62821358/19407
-  - CGO_ENABLED=1
+  - CGO_ENABLED=0
 
 flags:
   - -trimpath
   - -tags=netgo
 
-# goos:
+goos: linux
 #   - linux
 #   - darwin
 #   - windows
-# goarch:
+goarch: amd64
 #   - amd64
 #   - arm64
 binary: scorecard-{{ .Os }}-{{ .Arch }}
