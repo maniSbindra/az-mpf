@@ -51,8 +51,8 @@ jobs:
           - amd64
           - arm64
         exclude:
-          - goarch: arm64
-            goos: windows
+          - arch: arm64
+            os: windows
   verification:
     needs:
       - build
