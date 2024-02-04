@@ -1,43 +1,43 @@
 <mxfile host="65bd71144e">
     <diagram id="31JLIK71XQhkJkAo9kQR" name="Page-1">
-        <mxGraphModel dx="1089" dy="747" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+        <mxGraphModel dx="1183" dy="947" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
-                <mxCell id="11" style="edgeStyle=none;html=1;entryX=0;entryY=0.25;entryDx=0;entryDy=0;endArrow=none;endFill=0;strokeColor=#CCCCCC;" edge="1" parent="1" source="2" target="10">
+                <mxCell id="11" style="edgeStyle=none;html=1;entryX=0;entryY=0.25;entryDx=0;entryDy=0;endArrow=none;endFill=0;strokeColor=#CCCCCC;" parent="1" source="2" target="10" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="2" value="Service Prinipal&lt;br&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                <mxCell id="2" value="Service Prinipal&lt;br&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="109" y="530" width="160" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="5" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#7DBBB7;" vertex="1" parent="1">
+                <mxCell id="5" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#7DBBB7;" parent="1" vertex="1">
                     <mxGeometry x="284" y="120" width="290" height="210" as="geometry"/>
                 </mxCell>
-                <mxCell id="3" value="" style="sketch=0;aspect=fixed;html=1;points=[];align=center;image;fontSize=12;image=img/lib/mscae/ResourceGroup.svg;" vertex="1" parent="1">
+                <mxCell id="3" value="" style="sketch=0;aspect=fixed;html=1;points=[];align=center;image;fontSize=12;image=img/lib/mscae/ResourceGroup.svg;" parent="1" vertex="1">
                     <mxGeometry x="526.5" y="290" width="37.5" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="22" style="edgeStyle=none;html=1;entryX=0.146;entryY=-0.019;entryDx=0;entryDy=0;entryPerimeter=0;fontColor=#000000;endArrow=none;endFill=0;strokeColor=#7DBBB7;" edge="1" parent="1" source="4" target="2">
+                <mxCell id="22" style="edgeStyle=none;html=1;entryX=0.146;entryY=-0.019;entryDx=0;entryDy=0;entryPerimeter=0;fontColor=#000000;endArrow=none;endFill=0;strokeColor=#7DBBB7;" parent="1" source="4" target="2" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="4" value="New Temp Custom Role" style="ellipse;whiteSpace=wrap;html=1;fillColor=#7DBBB7;fontColor=#000000;" vertex="1" parent="1">
+                <mxCell id="4" value="New Temp Custom Role" style="ellipse;whiteSpace=wrap;html=1;fillColor=#7DBBB7;fontColor=#000000;" parent="1" vertex="1">
                     <mxGeometry x="294" y="190" width="120" height="80" as="geometry"/>
                 </mxCell>
-                <mxCell id="6" value="New Temp Resource Group (Resources Cleaned up by utility)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#000000;" vertex="1" parent="1">
+                <mxCell id="6" value="New Temp Resource Group (Resources Cleaned up by utility)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#000000;" parent="1" vertex="1">
                     <mxGeometry x="304" y="280" width="190" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="12" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;endArrow=none;endFill=0;strokeColor=#CCCCCC;" edge="1" parent="1" source="7" target="10">
+                <mxCell id="12" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;endArrow=none;endFill=0;strokeColor=#CCCCCC;" parent="1" source="7" target="10" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="7" value="arm-template.json" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                <mxCell id="7" value="arm-template.json" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="129" y="620" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="13" style="edgeStyle=none;html=1;entryX=0;entryY=0.75;entryDx=0;entryDy=0;endArrow=none;endFill=0;strokeColor=#CCCCCC;" edge="1" parent="1" source="8" target="10">
+                <mxCell id="13" style="edgeStyle=none;html=1;entryX=0;entryY=0.75;entryDx=0;entryDy=0;endArrow=none;endFill=0;strokeColor=#CCCCCC;" parent="1" source="8" target="10" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="8" value="arm-template-parameters.json" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                <mxCell id="8" value="arm-template-parameters.json" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="99" y="700" width="220" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="23" style="edgeStyle=none;html=1;dashed=1;dashPattern=12 12;fontColor=#000000;endArrow=classic;endFill=1;strokeColor=#7DBBB7;" edge="1" parent="1" source="10">
+                <mxCell id="23" style="edgeStyle=none;html=1;dashed=1;dashPattern=12 12;fontColor=#000000;endArrow=classic;endFill=1;strokeColor=#7DBBB7;" parent="1" source="10" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <mxPoint x="240" y="390" as="targetPoint"/>
                         <Array as="points">
@@ -45,35 +45,35 @@
                         </Array>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="26" style="edgeStyle=none;html=1;entryX=0.932;entryY=1.004;entryDx=0;entryDy=0;entryPerimeter=0;fontColor=#000000;endArrow=classic;endFill=1;strokeColor=#7DBBB7;" edge="1" parent="1" source="10" target="5">
+                <mxCell id="26" style="edgeStyle=none;html=1;entryX=0.932;entryY=1.004;entryDx=0;entryDy=0;entryPerimeter=0;fontColor=#000000;endArrow=classic;endFill=1;strokeColor=#7DBBB7;" parent="1" source="10" target="5" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="10" value="&lt;span style=&quot;color: rgba(0, 0, 0, 0); font-family: monospace; font-size: 0px;&quot;&gt;%3CmxGraphModel%3E%3Croot%3E%3CmxCell%20id%3D%220%22%2F%3E%3CmxCell%20id%3D%221%22%20parent%3D%220%22%2F%3E%3CmxCell%20id%3D%222%22%20value%3D%22arm-template.json%22%20style%3D%22rounded%3D0%3BwhiteSpace%3Dwrap%3Bhtml%3D1%3B%22%20vertex%3D%221%22%20parent%3D%221%22%3E%3CmxGeometry%20x%3D%2290%22%20y%3D%22440%22%20width%3D%22120%22%20height%3D%2260%22%20as%3D%22geometry%22%2F%3E%3C%2FmxCell%3E%3C%2Froot%3E%3C%2FmxGraphModel%3E&lt;/span&gt;&lt;span style=&quot;color: rgba(0, 0, 0, 0); font-family: monospace; font-size: 0px;&quot;&gt;%3CmxGraphModel%3E%3Croot%3E%3CmxCell%20id%3D%220%22%2F%3E%3CmxCell%20id%3D%221%22%20parent%3D%220%22%2F%3E%3CmxCell%20id%3D%222%22%20value%3D%22arm-template.json%22%20style%3D%22rounded%3D0%3BwhiteSpace%3Dwrap%3Bhtml%3D1%3B%22%20vertex%3D%221%22%20parent%3D%221%22%3E%3CmxGeometry%20x%3D%2290%22%20y%3D%22440%22%20width%3D%22120%22%20height%3D%2260%22%20as%3D%22geometry%22%2F%3E%3C%2FmxCell%3E%3C%2Froot%3E%3C%2FmxGraphModel%3E&lt;/span&gt;az-mpf utility&lt;br&gt;(Azure ARM template Deployment Minimum Permission Finder)&lt;br&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;The utility uses Az CLI credentials&lt;/span&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#3399FF;align=center;verticalAlign=middle;" vertex="1" parent="1">
+                <mxCell id="10" value="&lt;span style=&quot;color: rgba(0, 0, 0, 0); font-family: monospace; font-size: 0px;&quot;&gt;%3CmxGraphModel%3E%3Croot%3E%3CmxCell%20id%3D%220%22%2F%3E%3CmxCell%20id%3D%221%22%20parent%3D%220%22%2F%3E%3CmxCell%20id%3D%222%22%20value%3D%22arm-template.json%22%20style%3D%22rounded%3D0%3BwhiteSpace%3Dwrap%3Bhtml%3D1%3B%22%20vertex%3D%221%22%20parent%3D%221%22%3E%3CmxGeometry%20x%3D%2290%22%20y%3D%22440%22%20width%3D%22120%22%20height%3D%2260%22%20as%3D%22geometry%22%2F%3E%3C%2FmxCell%3E%3C%2Froot%3E%3C%2FmxGraphModel%3E&lt;/span&gt;&lt;span style=&quot;color: rgba(0, 0, 0, 0); font-family: monospace; font-size: 0px;&quot;&gt;%3CmxGraphModel%3E%3Croot%3E%3CmxCell%20id%3D%220%22%2F%3E%3CmxCell%20id%3D%221%22%20parent%3D%220%22%2F%3E%3CmxCell%20id%3D%222%22%20value%3D%22arm-template.json%22%20style%3D%22rounded%3D0%3BwhiteSpace%3Dwrap%3Bhtml%3D1%3B%22%20vertex%3D%221%22%20parent%3D%221%22%3E%3CmxGeometry%20x%3D%2290%22%20y%3D%22440%22%20width%3D%22120%22%20height%3D%2260%22%20as%3D%22geometry%22%2F%3E%3C%2FmxCell%3E%3C%2Froot%3E%3C%2FmxGraphModel%3E&lt;/span&gt;az-mpf utility&lt;br&gt;(Azure ARM template Deployment Minimum Permission Finder)&lt;br&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;The utility uses Az CLI credentials&lt;/span&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#3399FF;align=center;verticalAlign=middle;" parent="1" vertex="1">
                     <mxGeometry x="509" y="650" width="220" height="110" as="geometry"/>
                 </mxCell>
-                <mxCell id="17" style="edgeStyle=none;html=1;fontColor=#000000;endArrow=none;endFill=0;dashed=1;dashPattern=12 12;strokeColor=#CCCCCC;" edge="1" parent="1" source="14">
+                <mxCell id="17" style="edgeStyle=none;html=1;fontColor=#000000;endArrow=none;endFill=0;dashed=1;dashPattern=12 12;strokeColor=#CCCCCC;" parent="1" source="14" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <mxPoint x="320" y="610" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="18" style="edgeStyle=none;html=1;dashed=1;dashPattern=12 12;fontColor=#000000;endArrow=none;endFill=0;strokeColor=#CCCCCC;" edge="1" parent="1" source="14">
+                <mxCell id="18" style="edgeStyle=none;html=1;dashed=1;dashPattern=12 12;fontColor=#000000;endArrow=none;endFill=0;strokeColor=#CCCCCC;" parent="1" source="14" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <mxPoint x="290" y="670" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="19" style="edgeStyle=none;html=1;dashed=1;dashPattern=12 12;fontColor=#000000;endArrow=none;endFill=0;strokeColor=#CCCCCC;" edge="1" parent="1" source="14">
+                <mxCell id="19" style="edgeStyle=none;html=1;dashed=1;dashPattern=12 12;fontColor=#000000;endArrow=none;endFill=0;strokeColor=#CCCCCC;" parent="1" source="14" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <mxPoint x="390" y="730" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="14" value="Input Arguments" style="text;html=1;strokeColor=none;fillColor=#FFFEE0;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#000000;" vertex="1" parent="1">
+                <mxCell id="14" value="Input Arguments" style="text;html=1;strokeColor=none;fillColor=#FFFEE0;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#000000;" parent="1" vertex="1">
                     <mxGeometry x="399" y="540" width="60" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="20" value="Temporary Deployment with template resources" style="rounded=1;whiteSpace=wrap;html=1;fontColor=#000000;fillColor=#7DBBB7;" vertex="1" parent="1">
-                    <mxGeometry x="430" y="130" width="120" height="60" as="geometry"/>
+                <mxCell id="20" value="Temporary Deployment (Template resources created only in fullDeployment mpfMode)" style="rounded=1;whiteSpace=wrap;html=1;fontColor=#000000;fillColor=#7DBBB7;" parent="1" vertex="1">
+                    <mxGeometry x="400" y="130" width="150" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="21" value="&lt;h1&gt;&lt;span style=&quot;background-color: initial; font-size: 12px;&quot;&gt;Flow&lt;/span&gt;&lt;br&gt;&lt;/h1&gt;&lt;div&gt;&lt;span style=&quot;background-color: initial; font-size: 12px;&quot;&gt;- Remove any existing Role Assignments for Service Principal&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: initial; font-size: 12px;&quot;&gt;- Create new Resource Group&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: initial; font-size: 12px;&quot;&gt;- Create New Role with no actions&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: initial; font-size: 12px;&quot;&gt;- Assign New Role to Service Principal (SP)&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: initial; font-size: 12px;&quot;&gt;- While ARM Deployment (using SP creds) results in Authorization errors&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: initial; font-size: 12px;&quot;&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp;- Parse Authorization errors to get permissions needed by SP&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: initial; font-size: 12px;&quot;&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp;- Add permissions to custom Role. Retry till deployment succeeds&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: initial; font-size: 12px;&quot;&gt;- Print Permissions&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: initial; font-size: 12px;&quot;&gt;- Cleanup resources&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: initial; font-size: 12px;&quot;&gt;&amp;nbsp;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: initial; font-size: 12px;&quot;&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#9;&lt;/span&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;" style="text;html=1;strokeColor=none;fillColor=#FFFEE0;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;fontColor=#000000;" vertex="1" parent="1">
-                    <mxGeometry x="620" y="420" width="400" height="190" as="geometry"/>
+                <mxCell id="21" value="&lt;h1&gt;&lt;span style=&quot;background-color: initial; font-size: 12px;&quot;&gt;Flow&lt;/span&gt;&lt;br&gt;&lt;/h1&gt;&lt;div&gt;&lt;span style=&quot;background-color: initial; font-size: 12px;&quot;&gt;- Remove any existing Role Assignments for Service Principal&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: initial; font-size: 12px;&quot;&gt;- Create new Resource Group&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: initial; font-size: 12px;&quot;&gt;- Create New Role with no actions&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: initial; font-size: 12px;&quot;&gt;- Assign New Role to Service Principal (SP)&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: initial; font-size: 12px;&quot;&gt;- While Whatif Analysis/ARM Deployment (using SP creds) results in Authorization errors&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: initial; font-size: 12px;&quot;&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp;- Parse Authorization errors to get permissions needed by SP&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: initial; font-size: 12px;&quot;&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp;- Add permissions to custom Role. Retry till deployment succeeds&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: initial; font-size: 12px;&quot;&gt;- Print Permissions&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: initial; font-size: 12px;&quot;&gt;- Cleanup resources&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: initial; font-size: 12px;&quot;&gt;&amp;nbsp;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: initial; font-size: 12px;&quot;&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#9;&lt;/span&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;" style="text;html=1;strokeColor=none;fillColor=#FFFEE0;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="620" y="420" width="400" height="200" as="geometry"/>
                 </mxCell>
             </root>
         </mxGraphModel>
