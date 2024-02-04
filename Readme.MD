@@ -50,14 +50,14 @@ For example, to download the latest version for Windows:
 
 ```shell
 # Please change version in the URL to the latest version
-curl -L https://github.com/maniSbindra/az-mpf/releases/download/v0.2.1/az-mpf-windows-amd64.exe -o az-mpf.exe
+curl -L https://github.com/maniSbindra/az-mpf/releases/download/v0.3.2/az-mpf-windows-amd64.exe -o az-mpf.exe
 ```
 
 And for Mac Arm64:
   
 ```shell
 # Please change version in the URL to the latest version
-curl -L https://github.com/maniSbindra/az-mpf/releases/download/v0.2.1/az-mpf-darwin-arm64 -o az-mpf
+curl -L https://github.com/maniSbindra/az-mpf/releases/download/v0.3.2/az-mpf-darwin-arm64 -o az-mpf
 ``` 
 
 ## Building Locally
@@ -97,7 +97,7 @@ export SP_OBJECT_ID="YOUR_SP_OBJECT_ID" #Your Service Principal Object ID
 
 
 # Note! modify the curl command below to use your platform and the latest version of az-mpf 
-curl -L https://github.com/maniSbindra/az-mpf/releases/download/v0.2.1/az-mpf-darwin-arm64 -o az-mpf
+curl -L https://github.com/maniSbindra/az-mpf/releases/download/v0.3.2/az-mpf-darwin-arm64 -o az-mpf
 chmod +x ./az-mpf
 
 # Download the template and parameters file to same directory
