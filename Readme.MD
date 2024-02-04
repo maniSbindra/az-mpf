@@ -33,8 +33,10 @@ Following is the detailed flow of how this utility works:
 * A new Resource Group and Custom Role (with no assigned permissions) are created
 * The Service Principal (SP) is assigned the new custom role
 * For the above steps the utitity uses the **default Azure CLI credentials** which needs to have permissions to create custom role, resource group, and role assignments
-* For the following sub steps the **Service Principal Credentials** are used. These sub steps are re-tried till the deployment succeeds
-  * Attempt to deploy ARM template using template and parameters file
+* For the following sub steps the **Service Principal Credentials** are used. These sub steps are re-tried till the deployment succeeds in fullDeployment mode, or till the whatif request does not return any errors (in whatif mode)
+  * Default mpfMode is whatif, alternate mode is fullDeployment (can be set using flag -mpfMode fullDeployment)
+    * In Default whatif mpfMode a blank deployment is created and ARM what if analysis is done using the ARM template and parameters file
+    * In fullDeployment mode , attempt to deploy ARM template using template and parameters file
   * Check if Authorization errors have occured. Parse Authorization errors to fetch the scopes and corresponding permissions for which errors have occured. The [authorizationErrorParser Tests](./authorizationErrorParser_test.go) provide details of the kinds of Authorization erros typically received.
   * Add the missing permissions to custom Role. This sub step uses **default Azure CLI credentials** to update role permissions.
 * Print the Permissions. There are options provided to view the resource wise break up of permissions and also to export the result in JSON format
@@ -117,6 +119,7 @@ Parameters can be supplied to the utility either via command line or via environ
 | servicePrincipalClientID   | SP_CLIENT_ID                   | Required            |                                                 |
 | servicePrincipalObjectID   | SP_OBJECT_ID                   | Required            | Note this is the SP Object id and is different from the Client ID                                               |
 | servicePrincipalClientSecret | SP_CLIENT_SECRET             | Required            |                                                 |
+| mpfMode                    | N/A                            | Required            | Default is "whatif". Alternately fullDeployment can be used which tries to create all resources while finding the minimum permissions required   |
 | templateFilePath           | TEMPLATE_FILE                  | Required            | ARM template file with path                     |
 | parametersFilePath         | PARAMETERS_FILE                | Required            | ARM template parameters file with path          |
 | resourceGroupNamePfx       | TEST_DEPLOYMENT_RESOURCE_GROUP_NAME_PFX | Optional     | Prefix for the resource group name. If not provided, default prefix is testdeployrg |
