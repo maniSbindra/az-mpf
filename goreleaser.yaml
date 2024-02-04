@@ -7,7 +7,7 @@ before:
   hooks:
     - go mod download
 gomod:
-  proxy: true
+  # proxy: true
 builds:
 - id: linux
   binary: az-mpf-linux-{{ .Arch }}
