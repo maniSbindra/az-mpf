@@ -1,12 +1,12 @@
 name: SLSA releaser
-on: [push]
-# on:
-#   workflow_dispatch:
-#   push:
-#     tags:
-#       - "*"
-#   pull_request:
-#     branches: [ "main" ]
+# on: [push]
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "*"
+  pull_request:
+    branches: [ "main" ]
 
 permissions: read-all
 
