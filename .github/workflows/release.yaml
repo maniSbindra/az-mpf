@@ -38,8 +38,8 @@ jobs:
     uses: slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@v1.9.0 #7f4fdb871876c23e455853d694197440c5a91506
     with:
       go-version: 1.19
-      goos: ${{ matrix.goos }}
-      goarch: ${{ matrix.goarch }}
+      goos: ${{ matrix.os }}
+      goarch: ${{ matrix.arch }}
       evaluated-envs: "VERSION_LDFLAGS:${{needs.args.outputs.ldflags}}"
     strategy:
       matrix:
