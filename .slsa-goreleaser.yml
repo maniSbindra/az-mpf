@@ -8,8 +8,8 @@ flags:
   - -trimpath
   - -tags=netgo
 
-goos: {{ .Os }}
-goarch: {{ .Arch }}
+goos: {{ .Env.GOOS }}
+goarch: {{ .Env.GOARCH }}
 # goos: linux
 # #   - linux
 # #   - darwin
