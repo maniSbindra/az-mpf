@@ -30,15 +30,16 @@ jobs:
           echo "value=$(./scripts/version-ldflags)" >> "$GITHUB_OUTPUT"
   # Trusted builder.
   build:
+    env:
+      GOOS: ${{ matrix.os }}
+      GOARCH: ${{ matrix.arch }}
     permissions:
       id-token: write
       contents: write
       actions: read
     needs: args
     uses: slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@v1.9.0 #7f4fdb871876c23e455853d694197440c5a91506
-    env:
-      GOOS: ${{ matrix.os }}
-      GOARCH: ${{ matrix.arch }}
+    
     with:
       go-version: 1.19
       # goos: ${{ matrix.os }}
