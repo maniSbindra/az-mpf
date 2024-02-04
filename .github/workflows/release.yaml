@@ -8,7 +8,7 @@ on: [push]
   # pull_request:
   #   branches: [ "main" ]
 
-  permissions: read-all
+  # permissions: read-all
 
 env:
   GO_VERSION: 1.19
