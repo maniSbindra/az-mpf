@@ -1,4 +1,4 @@
-module github.com/manisbindra/go-issues/min-permission-required-finder
+module github.com/manisbindra/az-mpf
 
 go 1.19
 

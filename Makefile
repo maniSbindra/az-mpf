@@ -19,7 +19,7 @@ all: clean build
 build:
 	@echo "Building $(BINARY_NAME)..."
 	@mkdir -p $(OUTPUT_DIR)
-	$(GOBUILD) -o $(OUTPUT_DIR)/$(BINARY_NAME) .
+	$(GOBUILD) -o $(OUTPUT_DIR)/$(BINARY_NAME) ./cmd
 
 test:
 	@echo "Running tests..."
@@ -44,7 +44,7 @@ deps:
 build-all:
 	@echo "Building $(BINARY_NAME) for all target platforms..."
 	@mkdir -p $(OUTPUT_DIR)
-	GOOS=darwin GOARCH=arm64 $(GOBUILD) -o $(OUTPUT_DIR)/$(BINARY_NAME)-darwin-arm64 .
-	GOOS=darwin GOARCH=amd64 $(GOBUILD) -o $(OUTPUT_DIR)/$(BINARY_NAME)-darwin-amd64 .
-	GOOS=linux GOARCH=amd64 $(GOBUILD) -o $(OUTPUT_DIR)/$(BINARY_NAME)-linux-amd64 .
-	GOOS=windows GOARCH=amd64 $(GOBUILD) -o $(OUTPUT_DIR)/$(BINARY_NAME)-windows-amd64.exe .
+	GOOS=darwin GOARCH=arm64 $(GOBUILD) -o $(OUTPUT_DIR)/$(BINARY_NAME)-darwin-arm64 ./cmd
+	GOOS=darwin GOARCH=amd64 $(GOBUILD) -o $(OUTPUT_DIR)/$(BINARY_NAME)-darwin-amd64 ./cmd
+	GOOS=linux GOARCH=amd64 $(GOBUILD) -o $(OUTPUT_DIR)/$(BINARY_NAME)-linux-amd64 ./cmd
+	GOOS=windows GOARCH=amd64 $(GOBUILD) -o $(OUTPUT_DIR)/$(BINARY_NAME)-windows-amd64.exe ./cmd

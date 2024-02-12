@@ -1,4 +1,4 @@
-package main
+package domain
 
 import (
 	"errors"
@@ -8,23 +8,23 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func parseDeploymentError(deploymentErr error) (map[string][]string, error) {
-	if deploymentErr != nil && !strings.Contains(deploymentErr.Error(), "AuthorizationFailed") && !strings.Contains(deploymentErr.Error(), "Authorization failed") {
-		log.Infoln("Non Authorization Error when creating deployment:", deploymentErr)
-		return nil, errors.New("Could not parse deploment error, potentially due to a Non-Authorization Error when creating deployment")
+func GetScopePermissionsFromAuthError(authErrMesg string) (map[string][]string, error) {
+	if authErrMesg != "" && !strings.Contains(authErrMesg, "AuthorizationFailed") && !strings.Contains(authErrMesg, "Authorization failed") {
+		log.Infoln("Non Authorization Error when creating deployment:", authErrMesg)
+		return nil, errors.New("Could not parse deploment error, potentially due to a Non-Authorization error")
 	}
 
 	var resMap map[string][]string
 	var err error
 
-	if strings.Count(deploymentErr.Error(), "AuthorizationFailed") >= 1 {
-		resMap, err = parseMultiAuthorizationFailedErrors(deploymentErr.Error())
+	if strings.Count(authErrMesg, "AuthorizationFailed") >= 1 {
+		resMap, err = parseMultiAuthorizationFailedErrors(authErrMesg)
 
 	}
 
 	// If count of "Authorization failed" in error message is 1 or more than 1, then it is a multi authorization error
-	if strings.Count(deploymentErr.Error(), "Authorization failed") >= 1 {
-		resMap, err = parseMultiAuthorizationErrors(deploymentErr.Error())
+	if strings.Count(authErrMesg, "Authorization failed") >= 1 {
+		resMap, err = parseMultiAuthorizationErrors(authErrMesg)
 	}
 
 	if err != nil {
