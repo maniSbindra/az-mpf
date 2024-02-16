@@ -37,7 +37,7 @@ Following is the detailed flow of how this utility works:
   * Default mpfMode is whatif, alternate mode is fullDeployment (can be set using flag -mpfMode fullDeployment)
     * In Default whatif mpfMode a blank deployment is created and ARM what if analysis is done using the ARM template and parameters file
     * In fullDeployment mode , attempt to deploy ARM template using template and parameters file
-  * Check if Authorization errors have occured. Parse Authorization errors to fetch the scopes and corresponding permissions for which errors have occured. The [authorizationErrorParser Tests](./authorizationErrorParser_test.go) provide details of the kinds of Authorization erros typically received.
+  * Check if Authorization errors have occured. Parse Authorization errors to fetch the scopes and corresponding permissions for which errors have occured. The [authorizationErrorParser Tests](./pkg/domain/authorizationErrorParser_test.go) provide details of the kinds of Authorization erros typically received.
   * Add the missing permissions to custom Role. This sub step uses **default Azure CLI credentials** to update role permissions.
 * Print the Permissions. There are options provided to view the resource wise break up of permissions and also to export the result in JSON format
 * Cleanup Role Assignments, Custom Role and Resource Group created by the utility.

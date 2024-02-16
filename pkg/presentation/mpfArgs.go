@@ -1,4 +1,4 @@
-package main
+package presentation
 
 import (
 	"errors"
@@ -6,10 +6,30 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/google/uuid"
+	"github.com/manisbindra/az-mpf/pkg/domain"
+	mpfSharedUtils "github.com/manisbindra/az-mpf/pkg/infrastructure/mpfSharedUtils"
 	log "github.com/sirupsen/logrus"
 )
 
-func (m *MinPermFinder) ParseFlags() error {
+// declare struct to hold all values of parameters
+type MpfCLIArgs struct {
+	SubscriptionID       string
+	ResourceGroupNamePfx string
+	DeploymentNamePfx    string
+	SPClientID           string
+	SPObjectID           string
+	SPClientSecret       string
+	TenantID             string
+	TemplateFilePath     string
+	ParametersFilePath   string
+	Location             string
+	MPFMode              string
+	ShowDetailedOutput   bool
+	JSONOutput           bool
+}
+
+func GetCLIArgs() (MpfCLIArgs, error) {
 	var (
 		subscriptionID               string
 		resourceGroupNamePfx         string
@@ -25,6 +45,7 @@ func (m *MinPermFinder) ParseFlags() error {
 
 		showDetailedOutput bool
 		jsonOutput         bool
+		mpfArgs            MpfCLIArgs
 	)
 
 	flag.StringVar(&subscriptionID, "subscriptionID", "", "Azure Subscription ID")
@@ -112,26 +133,53 @@ func (m *MinPermFinder) ParseFlags() error {
 		flag.Usage()
 		// return error with values of all required parameters except secret
 		vals := fmt.Sprintf("subscriptionID: %s, resourceGroupName: %s, deploymentNamePfx: %s, servicePrincipalClientID: %s, servicePrincipalObjectID: %s, tenantID: %s, templateFilePath: %s, parametersFilePath: %s", subscriptionID, resourceGroupNamePfx, deploymentNamePfx, servicePrincipalClientID, servicePrincipalObjectID, tenantID, templateFilePath, parametersFilePath)
-		return errors.New("Values of of all required parameters not received. Values received: " + vals)
+		return mpfArgs, errors.New("Values of of all required parameters not received. Values received: " + vals)
 	}
 
 	// set values in receiver
-	m.SubscriptionID = subscriptionID
-	m.ResourceGroupNamePfx = resourceGroupNamePfx
-	m.SPClientID = servicePrincipalClientID
-	m.SPObjectID = servicePrincipalObjectID
-	m.SPClientSecret = servicePrincipalClientSecret
-	m.TenantID = tenantID
-	m.TemplateFilePath = templateFilePath
-	m.ParametersFilePath = parametersFilePath
-	m.DeploymentNamePfx = deploymentNamePfx
+	mpfArgs.SubscriptionID = subscriptionID
+	mpfArgs.ResourceGroupNamePfx = resourceGroupNamePfx
+	mpfArgs.SPClientID = servicePrincipalClientID
+	mpfArgs.SPObjectID = servicePrincipalObjectID
+	mpfArgs.SPClientSecret = servicePrincipalClientSecret
+	mpfArgs.TenantID = tenantID
+	mpfArgs.TemplateFilePath = templateFilePath
+	mpfArgs.ParametersFilePath = parametersFilePath
+	mpfArgs.DeploymentNamePfx = deploymentNamePfx
 
 	// set optional values in receiver
-	m.ShowDetailedOutput = showDetailedOutput
-	m.JSONOutput = jsonOutput
-	m.Location = location
-	m.MPFMode = mpfMode
+	mpfArgs.ShowDetailedOutput = showDetailedOutput
+	mpfArgs.JSONOutput = jsonOutput
+	mpfArgs.Location = location
+	mpfArgs.MPFMode = mpfMode
 
-	return nil
+	return mpfArgs, nil
 
+}
+
+func GetMPFConfig(mpfArgs MpfCLIArgs) domain.MPFConfig {
+	mpfConfig := domain.MPFConfig{
+		SubscriptionID: mpfArgs.SubscriptionID,
+		TenantID:       mpfArgs.TenantID,
+	}
+	mpfRole := &domain.Role{}
+	mpfRG := &domain.ResourceGroup{}
+	mpfSP := &domain.ServicePrincipal{}
+
+	roleDefUUID, _ := uuid.NewRandom()
+	mpfRole.RoleDefinitionID = roleDefUUID.String()
+	mpfRole.RoleDefinitionName = fmt.Sprintf("tmp-rol-%s", mpfSharedUtils.GenerateRandomString(7))
+	mpfRole.RoleDefinitionResourceID = fmt.Sprintf("/subscriptions/%s/providers/Microsoft.Authorization/roleDefinitions/%s", mpfArgs.SubscriptionID, mpfRole.RoleDefinitionID)
+	log.Infoln("roleDefinitionResourceID:", mpfRole.RoleDefinitionResourceID)
+	mpfRG.ResourceGroupName = fmt.Sprintf("%s-%s", mpfArgs.ResourceGroupNamePfx, mpfSharedUtils.GenerateRandomString(7))
+	mpfRG.ResourceGroupResourceID = fmt.Sprintf("/subscriptions/%s/resourceGroups/%s", mpfArgs.SubscriptionID, mpfRG.ResourceGroupName)
+	mpfRG.Location = mpfArgs.Location
+	mpfSP.SPObjectID = mpfArgs.SPObjectID
+	mpfSP.SPClientID = mpfArgs.SPClientID
+	mpfSP.SPClientSecret = mpfArgs.SPClientSecret
+
+	mpfConfig.Role = *mpfRole
+	mpfConfig.ResourceGroup = *mpfRG
+	mpfConfig.SP = *mpfSP
+	return mpfConfig
 }
