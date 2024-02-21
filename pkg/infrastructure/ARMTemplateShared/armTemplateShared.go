@@ -3,7 +3,7 @@ package ARMTemplateShared
 type ArmTemplateAdditionalConfig struct {
 	TemplateFilePath   string
 	ParametersFilePath string
-	DeplomentName      string
+	DeploymentName     string
 }
 
 // Get parameters in standard format that is without the schema, contentVersion and parameters fields

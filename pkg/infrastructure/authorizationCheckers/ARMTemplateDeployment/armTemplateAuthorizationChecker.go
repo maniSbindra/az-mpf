@@ -39,7 +39,7 @@ func NewARMTemplateDeploymentAuthorizationChecker(subscriptionID string, armConf
 }
 
 func (a *armDeploymentConfig) GetDeploymentAuthorizationErrors(mpfConfig domain.MPFConfig) (string, error) {
-	return a.deployARMTemplate(a.armConfig.DeplomentName, mpfConfig)
+	return a.deployARMTemplate(a.armConfig.DeploymentName, mpfConfig)
 }
 
 func (a *armDeploymentConfig) CleanDeployment(mpfConfig domain.MPFConfig) error {
@@ -47,7 +47,7 @@ func (a *armDeploymentConfig) CleanDeployment(mpfConfig domain.MPFConfig) error 
 	log.Infoln("*************************")
 
 	// Cancel deployment. Even if cancelling deployment fails attempt to delete other resources
-	_ = a.cancelDeployment(a.ctx, a.armConfig.DeplomentName, mpfConfig)
+	_ = a.cancelDeployment(a.ctx, a.armConfig.DeploymentName, mpfConfig)
 
 	return nil
 }

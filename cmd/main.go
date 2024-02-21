@@ -41,7 +41,7 @@ func main() {
 	armConfig := &ARMTemplateShared.ArmTemplateAdditionalConfig{
 		TemplateFilePath:   mpfArgs.TemplateFilePath,
 		ParametersFilePath: mpfArgs.ParametersFilePath,
-		DeplomentName:      deploymentName,
+		DeploymentName:     deploymentName,
 	}
 
 	// Create Azure API Clients
