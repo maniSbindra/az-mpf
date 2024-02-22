@@ -63,7 +63,7 @@ func TestARMTemplatWhatIfMultiResourceTemplate(t *testing.T) {
 	armConfig := &ARMTemplateShared.ArmTemplateAdditionalConfig{
 		TemplateFilePath:   mpfArgs.TemplateFilePath,
 		ParametersFilePath: mpfArgs.ParametersFilePath,
-		DeplomentName:      deploymentName,
+		DeploymentName:     deploymentName,
 	}
 
 	// azAPIClient := azureAPI.NewAzureAPIClients(mpfArgs.SubscriptionID)
@@ -107,7 +107,7 @@ func TestARMTemplateFullDeploymentMultiResourceTemplate(t *testing.T) {
 	armConfig := &ARMTemplateShared.ArmTemplateAdditionalConfig{
 		TemplateFilePath:   mpfArgs.TemplateFilePath,
 		ParametersFilePath: mpfArgs.ParametersFilePath,
-		DeplomentName:      deploymentName,
+		DeploymentName:     deploymentName,
 	}
 
 	// azAPIClient := azureAPI.NewAzureAPIClients(mpfArgs.SubscriptionID)

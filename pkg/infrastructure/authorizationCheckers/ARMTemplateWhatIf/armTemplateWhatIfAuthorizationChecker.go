@@ -36,7 +36,7 @@ func NewARMTemplateWhatIfAuthorizationChecker(subscriptionID string, armConfig A
 }
 
 func (a *armWhatIfConfig) GetDeploymentAuthorizationErrors(mpfConfig domain.MPFConfig) (string, error) {
-	return a.GetARMWhatIfAuthorizationErrors(a.armConfig.DeplomentName, mpfConfig)
+	return a.GetARMWhatIfAuthorizationErrors(a.armConfig.DeploymentName, mpfConfig)
 }
 
 func (a *armWhatIfConfig) CleanDeployment(mpfConfig domain.MPFConfig) error {
