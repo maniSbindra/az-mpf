@@ -3,6 +3,7 @@ package ARMTemplateWhatIf
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"time"
@@ -55,7 +56,7 @@ func (a *armWhatIfConfig) CreateEmptyDeployment(client *http.Client, deploymentN
 	log.Info("Creating empty deployment...")
 	log.Debug(deploymentUri)
 
-	emptyTempl, err := mpfSharedUtils.ReadJson("../templates/samples/empty.json")
+	emptyTempl, err := mpfSharedUtils.ReadJson("../samples/templates/empty.json")
 	if err != nil {
 		return err
 	}
@@ -225,6 +226,8 @@ func (a *armWhatIfConfig) GetWhatIfResp(whatIfRespLoc string, bearerToken string
 	req.Header.Add("Authorization", "Bearer "+bearerToken)
 
 	var respBody string
+	maxRetries := 10
+	retryCount := 0
 	for {
 		// make request
 		resp, err := client.Do(req)
@@ -245,6 +248,12 @@ func (a *armWhatIfConfig) GetWhatIfResp(whatIfRespLoc string, bearerToken string
 		if respBody != "" {
 			log.Infoln("Whatif Results Response Received..")
 			break
+		}
+
+		retryCount++
+		if retryCount == maxRetries {
+			log.Warnf("Whatif Results Response Body is empty after %d retries, returning empty response body", maxRetries)
+			return "", errors.New("Whatif Results Response Body is empty after 10 retries")
 		}
 
 		log.Infoln("Whatif Results Response Body is empty, retrying in a bit...")
