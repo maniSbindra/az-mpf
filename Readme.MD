@@ -18,18 +18,18 @@ Following is the detailed flow of how this utility works:
 * For the above steps the utitity uses the **default Azure CLI credentials** which needs to have permissions to create custom role, and role assignments
 * For the following sub steps the **Service Principal Credentials** are used. These sub steps are re-tried till the deployment succeeds
   * Depending on the provider (ARM whatif, ARM fullDeployment, or Terraform) a deployment is tried
-  * If the Service Principal does not have sufficient permissions an authorization error is returned. If Authorization errors have occured, parse Authorization errors to fetch the missing scopes and permissions. The [authorizationErrorParser Tests](./pkg/domain/authorizationErrorParser_test.go) provide details of the differnt kinds of Authorization errors typically received.
-  * Add the missing permissions to custom Role. This sub step uses **default Azure CLI credentials** to update role permissions.
+  * If the Service Principal does not have sufficient permissions an authorization error is returned by the deployment. If Authorization errors have occured, they are parsed to fetch the missing scopes and permissions. The [authorizationErrorParser Tests](./pkg/domain/authorizationErrorParser_test.go) provides details of the different kinds of Authorization errors typically received.
+  * The missing permissions are added to the custom Role. This sub step uses **default Azure CLI credentials** to update role permissions.
 * Once no authorization error is received, the utility prints the permissions assigned to the Service Principal
-* Print the Permissions. There are options provided to view the resource wise break up of permissions and also to export the result in JSON format
-* Cleanup up the resource created by the utility including the Role Assignments and Custom Role.
+* The required permissions are displayed based on the display options. These options can be used to view the resource wise break up of permissions and also to export the result in JSON format
+* All resources created are cleaned up by the utility including the Role Assignments and Custom Role.
 
 ## Supported Deployment Providers
 
 * Azure ARM Template: The ARM endpoints of both modes described below return multiple authorization errors at a time and as a result the final output is usually displayed in under 90 seconds, even for complex templates.
   * Whatif mode: This this the default ARM mode. It uses the ARM whatif endpoint to get the authorization errors and find the minimum permissions required for a deployment, without actually create any resources.
-  * FullDeployment mode: This mode creates an ARM template deployment request and then parses the authorization errors to find the minimum permissions required for a deployment. The deployment and resource group are deleted as soon as we get past the authorization errors, and as a result most resources are not actually created. One advantage of this mode is that it is quicker than the whatif mode, as the the responses from the whatif endpoing are not synchronous and take some time to get prepared
-* Terraform: The Terraform modes finds the minimum permissions required for a deployment, by getting the authorization errors from the Terraform plan/apply, and destroy commands. All resources are cleaned up by the utility. Since terraform call the ARM apis for one resource at a time, the authorization errors are not received in bulk, and as a result it can take quite long to get the final result. The overall time is the time taken to run the terraform plan/apply/destroy commands, plus the overhead of getting and parsing the authorization errors a few times.
+  * FullDeployment mode: This mode creates an ARM template deployment request and then parses the authorization errors to find the minimum permissions required for a deployment. The deployment and resource group are deleted as soon as we get past the authorization errors, and as a result most resources are not actually created. One advantage of this mode is that it is quicker than the whatif mode (Since responses from the whatif endpoint are not synchronous and take some time to get prepared)
+* Terraform: The Terraform mode finds the minimum permissions required for a deployment, by getting the authorization errors from the Terraform plan/apply, and destroy commands. All resources are cleaned up by the utility. Since terraform calls the ARM apis for one resource at a time, the authorization errors are not received in bulk, and as a result it can take quite long to get the final result. The overall time is the time taken to run the terraform plan/apply/destroy commands, plus the overhead of getting and parsing the authorization errors a few times.
 * Bicep (coming soon)
 
 ## Flags and Environment Variables
