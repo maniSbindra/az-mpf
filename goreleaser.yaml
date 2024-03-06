@@ -4,7 +4,7 @@ env:
   # https://stackoverflow.com/a/62821358/19407
   - CGO_ENABLED=0
 
-main: ./cmd/main.go
+# main: ./cmd/main.go
 
 before:
   hooks:
@@ -13,6 +13,7 @@ gomod:
   # proxy: true
 builds:
 - id: linux
+  dir: cmd
   binary: az-mpf-linux-{{ .Arch }}
   no_unique_dist_dir: true
   flags:
