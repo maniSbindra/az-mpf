@@ -4,7 +4,7 @@ env:
   # https://stackoverflow.com/a/62821358/19407
   - CGO_ENABLED=0
 
-main: ./cmd/main.go
+# main: ./cmd/main.go
 
 before:
   hooks:
