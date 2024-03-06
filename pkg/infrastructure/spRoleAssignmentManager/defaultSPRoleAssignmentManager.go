@@ -26,13 +26,15 @@ func NewSPRoleAssignmentManager(subscriptionID string) *SPRoleAssignmentManager 
 	}
 }
 
-func (r *SPRoleAssignmentManager) CreateUpdateCustomRole(subscription string, resourceGroupName string, role domain.Role, permissions []string) error {
+func (r *SPRoleAssignmentManager) CreateUpdateCustomRole(subscription string, role domain.Role, permissions []string) error {
 
-	scope := fmt.Sprintf("/subscriptions/%s/resourceGroups/%s", subscription, resourceGroupName)
+	// rgScope := fmt.Sprintf("/subscriptions/%s/resourceGroups/%s", subscription, resourceGroupName)
+	subScope := fmt.Sprintf("/subscriptions/%s", subscription)
 
 	data := map[string]interface{}{
 		"assignableScopes": []string{
-			scope,
+			// rgScope,
+			subScope,
 		},
 		"description": role.RoleDefinitionName,
 		"id":          role.RoleDefinitionResourceID,
@@ -65,7 +67,7 @@ func (r *SPRoleAssignmentManager) CreateUpdateCustomRole(subscription string, re
 	// log.Printf("jsonString: %s", jsonString)
 	log.Debugf("jsonString: %s", jsonString)
 
-	url := fmt.Sprintf("https://management.azure.com/subscriptions/%s/resourceGroups/%s/providers/Microsoft.Authorization/roleDefinitions/%s?api-version=2018-01-01-preview", subscription, resourceGroupName, role.RoleDefinitionID)
+	url := fmt.Sprintf("https://management.azure.com/subscriptions/%s/providers/Microsoft.Authorization/roleDefinitions/%s?api-version=2018-01-01-preview", subscription, role.RoleDefinitionID)
 
 	client := &http.Client{}
 
@@ -100,9 +102,10 @@ func (r *SPRoleAssignmentManager) CreateUpdateCustomRole(subscription string, re
 	return nil
 }
 
-func (r *SPRoleAssignmentManager) AssignRoleToSP(subscription string, resourceGroupName string, SPOBjectID string, role domain.Role) error {
+func (r *SPRoleAssignmentManager) AssignRoleToSP(subscription string, SPOBjectID string, role domain.Role) error {
 
-	scope := fmt.Sprintf("/subscriptions/%s/resourceGroups/%s", subscription, resourceGroupName)
+	// scope := fmt.Sprintf("/subscriptions/%s/resourceGroups/%s", subscription, resourceGroupName)
+	scope := fmt.Sprintf("/subscriptions/%s", subscription)
 	url := fmt.Sprintf("https://management.azure.com/%s/providers/Microsoft.Authorization/roleAssignments/%s?api-version=2022-04-01", scope, uuid.New().String())
 
 	data := map[string]interface{}{
@@ -218,7 +221,7 @@ func (r *SPRoleAssignmentManager) AssignRoleToSP(subscription string, resourceGr
 // }z
 
 // Initialise detachRolesFromSP detaches all roles from the SP
-func (r *SPRoleAssignmentManager) DetachRolesFromSP(ctx context.Context, subscription string, resourceGroupName string, SPOBjectID string, role domain.Role) error {
+func (r *SPRoleAssignmentManager) DetachRolesFromSP(ctx context.Context, subscription string, SPOBjectID string, role domain.Role) error {
 
 	filter := fmt.Sprintf("assignedTo('%s')", SPOBjectID)
 	resp, err := r.azAPIClient.RoleAssignmentsClient.List(ctx, filter)
@@ -240,8 +243,8 @@ func (r *SPRoleAssignmentManager) DetachRolesFromSP(ctx context.Context, subscri
 	return nil
 }
 
-func (r *SPRoleAssignmentManager) DeleteCustomRole(subscription string, resourceGroupName string, role domain.Role) error {
-	url := fmt.Sprintf("https://management.azure.com/subscriptions/%s/resourceGroups/%s/providers/Microsoft.Authorization/roleDefinitions/%s?api-version=2018-01-01-preview", subscription, resourceGroupName, role.RoleDefinitionID)
+func (r *SPRoleAssignmentManager) DeleteCustomRole(subscription string, role domain.Role) error {
+	url := fmt.Sprintf("https://management.azure.com/subscriptions/%s/providers/Microsoft.Authorization/roleDefinitions/%s?api-version=2018-01-01-preview", subscription, role.RoleDefinitionID)
 
 	client := &http.Client{}
 

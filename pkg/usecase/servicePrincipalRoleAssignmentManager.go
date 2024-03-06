@@ -7,13 +7,13 @@ import (
 )
 
 type ServicePrincipalAssignmentModifier interface {
-	DetachRolesFromSP(ctx context.Context, subscription string, resourceGroupName string, SPOBjectID string, role domain.Role) error
-	AssignRoleToSP(subscription string, resourceGroupName string, SPOBjectID string, role domain.Role) error
+	DetachRolesFromSP(ctx context.Context, subscription string, SPOBjectID string, role domain.Role) error
+	AssignRoleToSP(subscription string, SPOBjectID string, role domain.Role) error
 }
 
 type CustomRoleCreatorModifier interface {
-	CreateUpdateCustomRole(subscription string, resourceGroupName string, role domain.Role, permissions []string) error
-	DeleteCustomRole(subscription string, resourceGroupName string, role domain.Role) error
+	CreateUpdateCustomRole(subscription string, role domain.Role, permissions []string) error
+	DeleteCustomRole(subscription string, role domain.Role) error
 }
 
 type ServicePrincipalRolemAssignmentManager interface {
