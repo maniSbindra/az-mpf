@@ -18,7 +18,7 @@ func (d *displayConfig) displayText(w io.Writer) error {
 
 	// print permissions for default scope
 	fmt.Println("------------------------------------------------------------------------------------------------------------------------------------------")
-	fmt.Println("Permissions Assigned to Service Principal for Resource Group: ", d.displayOptions.DefaultResourceGroupResourceID)
+	fmt.Println("Permissions Required:")
 	fmt.Println("------------------------------------------------------------------------------------------------------------------------------------------")
 	for _, perm := range defaultPerms {
 		fmt.Println(perm)

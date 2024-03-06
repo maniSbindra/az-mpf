@@ -122,7 +122,7 @@ func (a *AzureAPIClients) SetDefaultAPIAccessBearerToken() error {
 	}
 
 	// Get the bearer token
-	log.Infoln("Getting new Default API Bearer Token")
+	// log.Infoln("Getting new Default API Bearer Token")
 	bearerToken, err := a.getBearerToken(a.DefaultCred)
 	if err != nil {
 		return err
