@@ -39,6 +39,7 @@ builds:
     - -s {{.Env.VERSION_LDFLAGS}} 
 
 - id: darwin
+  dir: cmd
   binary: az-mpf-darwin-{{ .Arch }}
   no_unique_dist_dir: true
   flags:
@@ -64,6 +65,7 @@ builds:
     - -s {{.Env.VERSION_LDFLAGS}} 
 
 - id: windows
+  dir: cmd
   binary: az-mpf-windows-{{ .Arch }}
   no_unique_dist_dir: true
   flags:
