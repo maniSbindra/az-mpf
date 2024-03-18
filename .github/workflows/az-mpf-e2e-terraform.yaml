@@ -1,10 +1,14 @@
-name: Terraform E2E Tests
+name: ARM and Bicep E2E Tests
 
 on:
   workflow_dispatch:
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
-  e2e-terraform:
+  e2e-arm-bicep:
     runs-on: ubuntu-latest
     env:
       MPF_SUBSCRIPTIONID: ${{ secrets.MPF_SUBSCRIPTIONID }}
@@ -14,7 +18,7 @@ jobs:
       MPF_SPOBJECTID: ${{ secrets.MPF_SPOBJECTID }}
     strategy:
       matrix:
-        go-version: [ '1.19' ]
+        go-version: [ '1.21.5' ]
 
     steps:
       - uses: actions/checkout@v4
@@ -22,21 +26,31 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: ${{ matrix.go-version }}
-      - name: Install dependencies
-        run: go get ./...
-      - name: Build
-        run: go build -v ./...
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.5.7
 
+      - name: Install dependencies
+        run: go get ./...
+
+      - name: Build
+        run: go build -v ./...
+
+      - name: 'Az CLI login - federated'
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_OID_CLIENT_ID }}
+          tenant-id: ${{ secrets.MPF_TENANTID }}
+          subscription-id: ${{ secrets.MPF_SUBSCRIPTIONID }}
+
       - name: Test with Go
         run: |
-          cd e2eTests
+          # cd e2eTests
           export TF_PATH=$(which terraform)
           go install github.com/jstemmer/go-junit-report@latest
-          go test . -v -run TestTerraform | go-junit-report -set-exit-code > TestResults-${{ matrix.go-version }}.xml
+          go test ./e2eTests -v -timeout 20m -run TestTerraform | go-junit-report -set-exit-code > TestResults-${{ matrix.go-version }}.xml
           
       - name: Upload Go test results
         uses: actions/upload-artifact@v4
