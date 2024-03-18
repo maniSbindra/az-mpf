@@ -51,18 +51,18 @@ jobs:
           which terraform
           export MPF_TFPATH=$(which terraform)
           go install github.com/jstemmer/go-junit-report@latest
-          go test ./e2eTests -v -timeout 20m -run TestTerraform 
+          go test ./e2eTests -v -timeout 20m -run TestTerraform | tee TestResults-${{ matrix.go-version }}.txt
           # | go-junit-report -set-exit-code > TestResults-${{ matrix.go-version }}.xml
           
       - name: Upload Go test results
         uses: actions/upload-artifact@v4
         with:
           name: Go-results-${{ matrix.go-version }}
-          path: TestResults-${{ matrix.go-version }}.xml
+          path: TestResults-${{ matrix.go-version }}.txt
       
-      - name: Test Summary
-        uses: test-summary/action@v1
-        with:
-          paths: |
-            TestResults-${{ matrix.go-version }}.xml  
-        if: always()
+      # - name: Test Summary
+      #   uses: test-summary/action@v1
+      #   with:
+      #     paths: |
+      #       TestResults-${{ matrix.go-version }}.xml  
+      #   if: always()
