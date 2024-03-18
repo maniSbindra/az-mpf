@@ -48,7 +48,7 @@ jobs:
       - name: Test with Go
         run: |
           # cd e2eTests
-          export TF_PATH=$(which terraform)
+          export MPF_TFPATH=$(which terraform)
           go install github.com/jstemmer/go-junit-report@latest
           go test ./e2eTests -v -timeout 20m -run TestTerraform | go-junit-report -set-exit-code > TestResults-${{ matrix.go-version }}.xml
           
