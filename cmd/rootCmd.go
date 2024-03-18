@@ -77,6 +77,7 @@ func NewRootCommand() *cobra.Command {
 
 	// Add subcommands
 	rootCmd.AddCommand(NewARMCommand())
+	rootCmd.AddCommand(NewBicepCommand())
 	rootCmd.AddCommand(NewTerraformCommand())
 
 	return rootCmd
