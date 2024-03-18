@@ -22,22 +22,23 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: ${{ matrix.go-version }}
-      - name: Install dependencies
-        run: go get ./...
-      - name: Build
-        run: go build -v ./...
       - name: Install Bicep
         run: |
           curl -Lo bicep https://github.com/Azure/bicep/releases/latest/download/bicep-linux-x64
           chmod +x ./bicep
           sudo mv ./bicep /usr/local/bin/bicep
-          bicep --help
+          # bicep --help
+      - name: Install dependencies
+        run: go get ./...
+      - name: Build
+        run: go build -v ./...
       - name: Test with Go
         run: |
-          cd e2eTests
+          # cd e2eTests
           export MPF_BICEPEXECPATH=/usr/local/bin/bicep
           go install github.com/jstemmer/go-junit-report@latest
-          go test . -v -run TestARM TestBicep | go-junit-report -set-exit-code > TestResults-${{ matrix.go-version }}.xml
+          go test ./e2eTests -v -run TestARM TestBicep 
+          # | go-junit-report -set-exit-code > TestResults-${{ matrix.go-version }}.xml
           
       - name: Upload Go test results
         uses: actions/upload-artifact@v4
