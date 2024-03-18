@@ -17,7 +17,9 @@ jobs:
         with:
           go-version: ${{ matrix.go-version }}
       - name: Install dependencies
-        run: go get .
+        run: go get ./...
+      - name: Build
+        run: go build -v ./...
       - name: Test with Go
         run: go test -json ./pkg/domain ./pkg/infrastructure/ARMTemplateShared ./pkg/infrastructure/mpfSharedUtils > TestResults-${{ matrix.go-version }}.json
       - name: Upload Go test results
