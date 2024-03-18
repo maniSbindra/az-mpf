@@ -232,7 +232,7 @@ func (a *armWhatIfConfig) GetWhatIfResp(whatIfRespLoc string, bearerToken string
 	req.Header.Add("Authorization", "Bearer "+bearerToken)
 
 	var respBody string
-	maxRetries := 10
+	maxRetries := 20
 	retryCount := 0
 	for {
 		// make request
