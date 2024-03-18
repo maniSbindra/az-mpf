@@ -105,18 +105,20 @@ func (a *armWhatIfConfig) GetARMWhatIfAuthorizationErrors(deploymentName string,
 
 	bearerToken, err := a.azAPIClient.GetSPBearerToken(mpfConfig.TenantID, mpfConfig.SP.SPClientID, mpfConfig.SP.SPClientSecret)
 	if err != nil {
-		return "", err
+		// wrap error and return
+		return "", fmt.Errorf("error getting bearer token: %w", err)
 	}
 
 	// read template and parameters
 	template, err := mpfSharedUtils.ReadJson(a.armConfig.TemplateFilePath)
 	if err != nil {
-		return "", err
+		// log.Errorf("Error reading template file: %v", err)
+		return "", fmt.Errorf("%w: %w", ARMTemplateShared.ErrInvalidTemplate, fmt.Errorf("error reading template file: %w", err))
 	}
 
 	parameters, err := mpfSharedUtils.ReadJson(a.armConfig.ParametersFilePath)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("%w: %w", ARMTemplateShared.ErrInvalidTemplate, fmt.Errorf("error reading parameters file: %w", err))
 	}
 
 	// convert parameters to standard format
@@ -133,7 +135,7 @@ func (a *armWhatIfConfig) GetARMWhatIfAuthorizationErrors(deploymentName string,
 	// convert bodyJSON to string
 	fullTemplateJSONBytes, err := json.Marshal(fullTemplate)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("%w, %w", ARMTemplateShared.ErrInvalidTemplate, fmt.Errorf("error marshalling fullTemplateJSON: %w", err))
 	}
 
 	fullTemplateJSONString := string(fullTemplateJSONBytes)
@@ -144,17 +146,6 @@ func (a *armWhatIfConfig) GetARMWhatIfAuthorizationErrors(deploymentName string,
 	// create JSON body with template and parameters
 
 	client := &http.Client{}
-
-	// check if deplolyment exists if not create empty deployment
-
-	// deploymentExists, err := a.CheckARMDeploymentExists(deploymentName, mpfConfig)
-	// if !deploymentExists {
-	// log.Info("MPF mode is whatif, creating empty deployment....")
-	// err = a.CreateEmptyDeployment(client, deploymentName, bearerToken, mpfConfig)
-	// if err != nil {
-	// 	return "", err
-	// }
-	// }
 
 	url := fmt.Sprintf("https://management.azure.com/subscriptions/%s/resourcegroups/%s/providers/Microsoft.Resources/deployments/%s/whatIf?api-version=2021-04-01", mpfConfig.SubscriptionID, mpfConfig.ResourceGroup.ResourceGroupName, deploymentName)
 	reqMethod := "POST"
@@ -177,32 +168,47 @@ func (a *armWhatIfConfig) GetARMWhatIfAuthorizationErrors(deploymentName string,
 	}
 	defer resp.Body.Close()
 
+	// if response status code is 400, indicates invalid template
+	if resp.StatusCode == 400 {
+		// log.Errorf("InvalidTemplate error occured: %s. Please check the Template and Parameters", resp.Status)
+		// return "", errors.New("InvalidTemplate")
+		// return "", fmt.Error("InvalidTemplate: Please check the Template and Parameters: %w", resp.Status)
+		return "", fmt.Errorf("%w, %w", ARMTemplateShared.ErrInvalidTemplate, errors.New("please check the template and parameter files"))
+	}
+
 	whatIfRespLoc := resp.Header.Get("Location")
 	log.Debugf("What if response Location: %s \n", whatIfRespLoc)
 
 	_, err = URL.ParseRequestURI(whatIfRespLoc)
 	if err != nil {
-		return "", err
+		// return "", err
+		return "", fmt.Errorf("Error parsing what if response location: %w", err)
 	}
 
 	respBody, err := a.GetWhatIfResp(whatIfRespLoc, bearerToken)
 	if err != nil {
 		log.Infof("Could not fetch what if response: %v \n", err)
-		return "", err
+		// return "", err
+		return "", fmt.Errorf("Could not fetch what if response: %w", err)
 	}
 
-	// fmt.Println(respBody)
 	log.Debugln(respBody)
-	// print response body
-	if strings.Contains(respBody, "Authorization") {
-		return respBody, nil
-	}
 
-	if strings.Contains(respBody, "InvalidTemplateDeployment") {
+	switch {
+	case strings.Contains(respBody, "InvalidTemplate") && !strings.Contains(respBody, "InvalidTemplateDeployment"):
+		// This indicates the ARM Template or Bicep File has issues.
+		// Sample
+		// {"status":"Failed","error":{"code":"InvalidTemplate","message":"Deployment template validation failed: 'The template parameters 'aksClusterName, virtualNetworkName' in the parameters file are not valid; they are not present in the original template and can therefore not be provided at deployment time. The only supported parameters for this template are 'clusterName, location, subnetName, vnetName'. Please see https://aka.ms/arm-pass-parameter-values for usage details.'.","additionalInfo":[{"type":"TemplateViolation","info":{"lineNumber":0,"linePosition":0,"path":""}}]}}
+		return "", fmt.Errorf("%w: please check the template and parameters file: %s", ARMTemplateShared.ErrInvalidTemplate, respBody)
+	case strings.Contains(respBody, "Authorization"):
+		// This indicates Authorization errors occured
+		return respBody, nil
+	case strings.Contains(respBody, "InvalidTemplateDeployment"):
 		// This indicates all Authorization errors are fixed
 		// Sample error [{\"code\":\"PodIdentityAddonFeatureFlagNotEnabled\",\"message\":\"Provisioning of resource(s) for container service aks-24xalwx7i2ueg in resource group testdeployrg-Y2jsRAG failed. Message: PodIdentity addon is not allowed since feature 'Microsoft.ContainerService/EnablePodIdentityPreview' is not enabled.
 		// Hence ok to proceed, and not return error in this condition
-		log.Warnf("Non Authorizaton error occured: %s", respBody)
+		log.Warnf("Post Authorizaton error occured: %s", respBody)
+
 	}
 
 	return "", nil
@@ -260,8 +266,6 @@ func (a *armWhatIfConfig) GetWhatIfResp(whatIfRespLoc string, bearerToken string
 		// Sleep for 500 milli seconds and try again
 		time.Sleep(500 * time.Millisecond)
 
-		// fmt.Println(respBody)
-		// print response body
 	}
 
 	log.Debugln("Whatif Results Response Body:")
@@ -270,43 +274,3 @@ func (a *armWhatIfConfig) GetWhatIfResp(whatIfRespLoc string, bearerToken string
 	return respBody, nil
 
 }
-
-// func (a *armWhatIfConfig) CheckARMDeploymentExists(deploymentName string, mpfConfig domain.MPFConfig) (bool, error) {
-
-// 	bearerToken, err := a.azAPIClient.GetSPBearerToken(mpfConfig.TenantID, mpfConfig.SP.SPClientID, mpfConfig.SP.SPClientSecret)
-// 	if err != nil {
-// 		return false, err
-// 	}
-
-// 	url := fmt.Sprintf("https://management.azure.com/subscriptions/%s/resourcegroups/%s/providers/Microsoft.Resources/deployments/%s?api-version=2020-10-01", mpfConfig.SubscriptionID, mpfConfig.ResourceGroup.ResourceGroupName, deploymentName)
-
-// 	client := &http.Client{}
-
-// 	req, err := http.NewRequest("GET", url, nil)
-// 	if err != nil {
-// 		return false, err
-// 	}
-
-// 	req.Header.Set("Content-Type", "application/json")
-// 	req.Header.Set("Accept", "application/json")
-// 	req.Header.Set("User-Agent", "Go HTTP Client")
-
-// 	// add bearer token to header
-// 	req.Header.Add("Authorization", "Bearer "+bearerToken)
-
-// 	// make request
-// 	resp, err := client.Do(req)
-// 	if err != nil {
-// 		return false, err
-// 	}
-// 	defer resp.Body.Close()
-
-// 	if resp.StatusCode == 404 {
-// 		return false, nil
-// 	}
-
-// 	log.Debugf("Check Deployment exists response status code: %d \n", resp.StatusCode)
-
-// 	return true, nil
-
-// }

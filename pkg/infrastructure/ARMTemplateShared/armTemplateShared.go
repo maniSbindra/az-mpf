@@ -1,5 +1,9 @@
 package ARMTemplateShared
 
+import "errors"
+
+var ErrInvalidTemplate = errors.New("InvalidTemplate")
+
 type ArmTemplateAdditionalConfig struct {
 	TemplateFilePath   string
 	ParametersFilePath string
