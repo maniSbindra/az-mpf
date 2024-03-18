@@ -1,4 +1,4 @@
-name: ARM and Bicep E2E Tests
+name: Terraform e2e tests
 
 on:
   workflow_dispatch:
@@ -8,7 +8,7 @@ permissions:
   contents: read
 
 jobs:
-  e2e-arm-bicep:
+  e2e-terraform:
     runs-on: ubuntu-latest
     env:
       MPF_SUBSCRIPTIONID: ${{ secrets.MPF_SUBSCRIPTIONID }}
