@@ -52,7 +52,8 @@ jobs:
           # cd e2eTests
           export MPF_BICEPEXECPATH=/usr/local/bin/bicep
           go install github.com/jstemmer/go-junit-report@latest
-          go test ./e2eTests -v -run TestARM TestBicep | go-junit-report -set-exit-code > TestResults-${{ matrix.go-version }}.xml
+          go test ./e2eTests -v -run TestARM TestBicep 
+          # | go-junit-report -set-exit-code > TestResults-${{ matrix.go-version }}.xml
           
       - name: Upload Go test results
         uses: actions/upload-artifact@v4

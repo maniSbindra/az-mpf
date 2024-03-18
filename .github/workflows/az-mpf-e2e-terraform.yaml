@@ -50,7 +50,8 @@ jobs:
           # cd e2eTests
           export MPF_TFPATH=$(which terraform)
           go install github.com/jstemmer/go-junit-report@latest
-          go test ./e2eTests -v -timeout 20m -run TestTerraform | go-junit-report -set-exit-code > TestResults-${{ matrix.go-version }}.xml
+          go test ./e2eTests -v -timeout 20m -run TestTerraform 
+          # | go-junit-report -set-exit-code > TestResults-${{ matrix.go-version }}.xml
           
       - name: Upload Go test results
         uses: actions/upload-artifact@v4
