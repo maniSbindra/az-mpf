@@ -3,6 +3,10 @@ name: ARM and Bicep E2E Tests
 on:
   workflow_dispatch:
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   e2e-arm-bicep:
     runs-on: ubuntu-latest
@@ -22,16 +26,27 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: ${{ matrix.go-version }}
+
       - name: Install Bicep
         run: |
           curl -Lo bicep https://github.com/Azure/bicep/releases/latest/download/bicep-linux-x64
           chmod +x ./bicep
           sudo mv ./bicep /usr/local/bin/bicep
           # bicep --help
+
       - name: Install dependencies
         run: go get ./...
+
       - name: Build
         run: go build -v ./...
+
+      - name: 'Az CLI login - federated'
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_OID_CLIENT_ID }}
+          tenant-id: ${{ secrets.MPF_TENANTID }}
+          subscription-id: ${{ secrets.MPF_SUBSCRIPTIONID }}
+
       - name: Test with Go
         run: |
           # cd e2eTests
