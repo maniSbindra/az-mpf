@@ -149,7 +149,7 @@ Microsoft.Resources/deployments/write
 ```
 
 ### Complex ARM template sample
-Let us look at the detailed output of a more complex ARM template using fullDeployment option. The following is the command used to run the sample:
+Let us look at the detailed output of a more complex ARM template. The following is the command used to run the sample:
 
 ```shell
 export MPF_SUBSCRIPTIONID=YOUR_SUBSCRIPTION_ID
@@ -158,7 +158,7 @@ export MPF_SPCLIENTID=YOUR_SP_CLIENT_ID
 export MPF_SPCLIENTSECRET=YOUR_SP_CLIENT_SECRET
 export MPF_SPOBJECTID=YOUR_SP_OBJECT_ID
 
-$ ./az-mpf arm --templateFilePath ./samples/templates/multi-resource-template.json --parametersFilePath ./samples/templates/multi-resource-parameters.json --fullDeployment --showDetailedOutput 
+$ ./az-mpf arm --templateFilePath ./samples/templates/multi-resource-template.json --parametersFilePath ./samples/templates/multi-resource-parameters.json --showDetailedOutput 
 
 ------------------------------------------------------------------------------------------------------------------------------------------
 Permissions Required:
