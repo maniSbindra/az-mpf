@@ -7,6 +7,9 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"os/exec"
+	"path/filepath"
+	"strings"
 
 	"github.com/manisbindra/az-mpf/pkg/domain"
 	"github.com/manisbindra/az-mpf/pkg/infrastructure/ARMTemplateShared"
@@ -20,19 +23,15 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var flgResourceGroupNamePfx string
-var flgDeploymentNamePfx string
-var flgLocation string
-var flgTemplateFilePath string
-var flgParametersFilePath string
-var flgFullDeployment bool
+var flgBicepFilePath string
+var flgBicepExecPath string
 
 // armCmd represents the arm command
 
-func NewARMCommand() *cobra.Command {
+func NewBicepCommand() *cobra.Command {
 
-	armCmd := &cobra.Command{
-		Use:   "arm",
+	bicepCmd := &cobra.Command{
+		Use:   "bicep",
 		Short: "A brief description of your command",
 		Long: `A longer description that spans multiple lines and likely contains examples
 	and usage of using your command. For example:
@@ -40,53 +39,76 @@ func NewARMCommand() *cobra.Command {
 	Cobra is a CLI library for Go that empowers applications.
 	This application is a tool to generate the needed files
 	to quickly create a Cobra application.`,
-		Run: getMPFARM,
+		Run: getMPFBicep,
 	}
 
-	armCmd.Flags().StringVarP(&flgResourceGroupNamePfx, "resourceGroupNamePfx", "", "testdeployrg", "Resource Group Name Prefix")
-	armCmd.Flags().StringVarP(&flgDeploymentNamePfx, "deploymentNamePfx", "", "testDeploy", "Deployment Name Prefix")
+	bicepCmd.Flags().StringVarP(&flgResourceGroupNamePfx, "resourceGroupNamePfx", "", "testdeployrg", "Resource Group Name Prefix")
+	bicepCmd.Flags().StringVarP(&flgDeploymentNamePfx, "deploymentNamePfx", "", "testDeploy", "Deployment Name Prefix")
 
-	armCmd.Flags().StringVarP(&flgTemplateFilePath, "templateFilePath", "", "", "Path to ARM Template File")
-	armCmd.MarkFlagRequired("templateFilePath")
+	bicepCmd.Flags().StringVarP(&flgBicepFilePath, "bicepFilePath", "", "", "Path to bicep File")
+	bicepCmd.MarkFlagRequired("bicepFilePath")
 
-	armCmd.Flags().StringVarP(&flgParametersFilePath, "parametersFilePath", "", "", "Path to Template Parameters File")
-	armCmd.MarkFlagRequired("parametersFilePath")
+	bicepCmd.Flags().StringVarP(&flgParametersFilePath, "parametersFilePath", "", "", "Path to bicep Parameters File")
+	bicepCmd.MarkFlagRequired("parametersFilePath")
 
-	armCmd.Flags().StringVarP(&flgLocation, "location", "", "eastus", "Location")
+	bicepCmd.Flags().StringVarP(&flgBicepExecPath, "bicepExecPath", "", "", "Bicep Executable Path")
+	bicepCmd.MarkFlagRequired("bicepExecPath")
 
-	// armCmd.Flags().BoolVarP(&flgFullDeployment, "fullDeployment", "", false, "Full Deployment")
+	bicepCmd.Flags().StringVarP(&flgLocation, "location", "", "eastus", "Location")
 
-	return armCmd
+	// bicepCmd.Flags().BoolVarP(&flgFullDeployment, "fullDeployment", "", false, "Full Deployment")
+
+	return bicepCmd
 }
 
-func getMPFARM(cmd *cobra.Command, args []string) {
+func getMPFBicep(cmd *cobra.Command, args []string) {
 	setLogLevel()
 
-	log.Info("Executing MPF for ARM")
+	log.Info("Executing MPF for Bicep")
 
 	log.Debugf("ResourceGroupNamePfx: %s\n", flgResourceGroupNamePfx)
 	log.Debugf("DeploymentNamePfx: %s\n", flgDeploymentNamePfx)
-	log.Infof("TemplateFilePath: %s\n", flgTemplateFilePath)
+	log.Infof("BicepFilePath: %s\n", flgBicepFilePath)
 	log.Infof("ParametersFilePath: %s\n", flgParametersFilePath)
+	log.Infof("BicepExecPath: %s\n", flgBicepExecPath)
 
 	// validate if template and parameters files exists
-	if _, err := os.Stat(flgTemplateFilePath); os.IsNotExist(err) {
-		log.Fatal("Template File does not exist")
+	if _, err := os.Stat(flgBicepFilePath); os.IsNotExist(err) {
+		log.Fatal("Bicep File does not exist")
 	}
 
-	flgTemplateFilePath, err := getAbsolutePath(flgTemplateFilePath)
-	if err != nil {
-		log.Errorf("Error getting absolute path for ARM template file: %v\n", err)
+	if _, err := os.Stat(flgBicepExecPath); os.IsNotExist(err) {
+		log.Fatal("Bicep Executable does not exist")
 	}
 
 	if _, err := os.Stat(flgParametersFilePath); os.IsNotExist(err) {
 		log.Fatal("Parameters File does not exist")
 	}
 
+	flgBicepExecPath, err := getAbsolutePath(flgBicepExecPath)
+	if err != nil {
+		log.Errorf("Error getting absolute path for bicep executable: %v\n", err)
+	}
+
+	flgBicepFilePath, err := getAbsolutePath(flgBicepFilePath)
+	if err != nil {
+		log.Errorf("Error getting absolute path for bicep file: %v\n", err)
+	}
+
 	flgParametersFilePath, err := getAbsolutePath(flgParametersFilePath)
 	if err != nil {
-		log.Errorf("Error getting absolute path for ARM template parameters file: %v\n", err)
+		log.Errorf("Error getting absolute path for parameters file: %v\n", err)
 	}
+
+	armTemplatePath := strings.TrimSuffix(flgBicepFilePath, ".bicep") + ".json"
+	bicepCmd := exec.Command(flgBicepExecPath, "build", flgBicepFilePath, "--outfile", armTemplatePath)
+	bicepCmd.Dir = filepath.Dir(flgBicepFilePath)
+
+	_, err = bicepCmd.CombinedOutput()
+	if err != nil {
+		log.Errorf("error running bicep build: %s", err)
+	}
+	log.Infoln("Bicep build successful, ARM Template created at:", armTemplatePath)
 
 	ctx := context.Background()
 
@@ -98,7 +120,7 @@ func getMPFARM(cmd *cobra.Command, args []string) {
 	mpfConfig.ResourceGroup = mpfRG
 	deploymentName := fmt.Sprintf("%s-%s", flgDeploymentNamePfx, mpfSharedUtils.GenerateRandomString(7))
 	armConfig := &ARMTemplateShared.ArmTemplateAdditionalConfig{
-		TemplateFilePath:   flgTemplateFilePath,
+		TemplateFilePath:   armTemplatePath,
 		ParametersFilePath: flgParametersFilePath,
 		DeploymentName:     deploymentName,
 	}
@@ -122,6 +144,13 @@ func getMPFARM(cmd *cobra.Command, args []string) {
 	mpfResult, err := mpfService.GetMinimumPermissionsRequired()
 	if err != nil {
 		log.Fatal(err)
+	}
+
+	log.Infoln("Deleting Generated ARM Template file...")
+	// delete generated ARM template file
+	err = os.Remove(armTemplatePath)
+	if err != nil {
+		log.Errorf("Error deleting Generated ARM template file: %v\n", err)
 	}
 
 	displayOptions := presentation.DisplayOptions{

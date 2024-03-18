@@ -1,0 +1,51 @@
+name: Terraform E2E Tests
+
+on:
+  workflow_dispatch:
+
+jobs:
+  e2e-terraform:
+    runs-on: ubuntu-latest
+    env:
+      MPF_SUBSCRIPTIONID: ${{ secrets.MPF_SUBSCRIPTIONID }}
+      MPF_TENANTID: ${{ secrets.MPF_TENANTID }}
+      MPF_SPCLIENTID: ${{ secrets.MPF_SPCLIENTID }}
+      MPF_SPCLIENTSECRET: ${{ secrets.MPF_SPCLIENTSECRET }}
+      MPF_SPOBJECTID: ${{ secrets.MPF_SPOBJECTID }}
+    strategy:
+      matrix:
+        go-version: [ '1.19' ]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ matrix.go-version }}
+      - name: Install dependencies
+        run: go get ./...
+      - name: Build
+        run: go build -v ./...
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.5.7
+
+      - name: Test with Go
+        run: |
+          export TF_PATH=$(which terraform)
+          go install github.com/jstemmer/go-junit-report@latest
+          go test . -v -run TestTerraform | go-junit-report -set-exit-code > TestResults-${{ matrix.go-version }}.xml
+          
+      - name: Upload Go test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: Go-results-${{ matrix.go-version }}
+          path: TestResults-${{ matrix.go-version }}.xml
+      
+      - name: Test Summary
+        uses: test-summary/action@v1
+        with:
+          paths: |
+            TestResults-${{ matrix.go-version }}.xml  
+        if: always()
