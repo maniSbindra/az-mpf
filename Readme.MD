@@ -88,9 +88,9 @@ For example, to download the latest version for Windows:
 
 ```shell
 # Please change version in the URL to the latest version
-curl -LO https://github.com/maniSbindra/az-mpf/releases/download/v0.7.0/az-mpf_0.7.0_windows_amd64.tar.gz
-tar -xzf az-mpf_0.7.0_windows_amd64.tar.gz
-mv az-mpf_0.7.0_windows_amd64 az-mpf.exe
+curl -LO https://github.com/maniSbindra/az-mpf/releases/download/v0.8.0/az-mpf_0.8.0_windows_amd64.tar.gz
+tar -xzf az-mpf_0.8.0_windows_amd64.tar.gz
+mv az-mpf_0.8.0_windows_amd64 az-mpf.exe
 chmod +x ./az-mpf.exe
 ```
 
@@ -98,27 +98,27 @@ And for Mac Arm64:
   
 ```shell
 # Please change version in the URL to the latest version
-curl -LO https://github.com/maniSbindra/az-mpf/releases/download/v0.7.0/az-mpf_0.7.0_darwin_arm64.tar.gz
-tar -xzf az-mpf_0.7.0_darwin_arm64.tar.gz
+curl -LO https://github.com/maniSbindra/az-mpf/releases/download/v0.8.0/az-mpf_0.8.0_darwin_arm64.tar.gz
+tar -xzf az-mpf_0.8.0_darwin_arm64.tar.gz
 mv az-mpf-darwin-arm64 az-mpf
 chmod +x ./az-mpf
 ```
 
 ## Verify Release Binaries using SLSA Verifier
 
-The release binaries are signed using the SLSA (Supply Chain Levels for Software Artifacts) framework. You can verify the release binaries using the [SLSA Verifier](https://github.com/slsa-framework/slsa-verifier). The following steps show how to verify the release binary for darwin/arm64 against release 0.7.0, using the SLSA Verifier:
+The release binaries are signed using the SLSA (Supply Chain Levels for Software Artifacts) framework. You can verify the release binaries using the [SLSA Verifier](https://github.com/slsa-framework/slsa-verifier). The following steps show how to verify the release binary for darwin/arm64 against release 0.8.0, using the SLSA Verifier:
 
 ```shell
 # download arm64 darwin release binary and the multiple.intoto.jsonl file
-curl -LO https://github.com/maniSbindra/az-mpf/releases/download/v0.7.0/az-mpf_0.7.0_darwin_arm64.tar.gz
-curl -LO https://github.com/maniSbindra/az-mpf/releases/download/v0.7.0/multiple.intoto.jsonl
+curl -LO https://github.com/maniSbindra/az-mpf/releases/download/v0.8.0/az-mpf_0.8.0_darwin_arm64.tar.gz
+curl -LO https://github.com/maniSbindra/az-mpf/releases/download/v0.8.0/multiple.intoto.jsonl
 
 # modify path to the slsa-verifier binary as per your installation and verify the release binary
-$ /PATH_TO_VERIFER/slsa-verifier verify-artifact az-mpf_0.7.0_darwin_arm64.tar.gz   --provenance-path multiple.intoto.jsonl   --source-uri github.com/maniSbindra/az-mpf  --source-tag v0.7.0
+$ /PATH_TO_VERIFER/slsa-verifier verify-artifact az-mpf_0.8.0_darwin_arm64.tar.gz   --provenance-path multiple.intoto.jsonl   --source-uri github.com/maniSbindra/az-mpf  --source-tag v0.8.0
 
 Verified signature against tlog entry index 76002620 at URL: https://rekor.sigstore.dev/api/v1/log/entries/24296fb24b8ad77ae67470bb23a7a809a475c46078739a61725936641b76508ac420e02e217475de
 Verified build using builder "https://github.com/slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@refs/tags/v1.9.0" at commit 648fe797c5b5253360ae1c6e60bd9521544209bc
-Verifying artifact az-mpf_0.7.0_darwin_arm64.tar.gz: PASSED
+Verifying artifact az-mpf_0.8.0_darwin_arm64.tar.gz: PASSED
 
 PASSED: Verified SLSA provenance
 ```
@@ -151,7 +151,7 @@ Microsoft.Resources/deployments/write
 
 ```
 
-### BICEP
+### Bicep
 
 ```shell
 export MPF_SUBSCRIPTIONID=YOUR_SUBSCRIPTION_ID
@@ -216,6 +216,42 @@ To view details of display options the utility provides please refer to the [dis
 ## Building Locally
 
 You can also build locally by cloning this repo and running `make build`.
+
+## Testing Locally
+
+### Unit Tests
+
+To run the unit tests, run `make test`.
+
+### End to End ARM and Bicep Tests
+
+To run the end to end tests for ARM and Bicep, you need to have the following environment variables set, and then execute `make test-e2e`:
+
+```shell
+export MPF_SUBSCRIPTIONID=YOUR_SUBSCRIPTION_ID
+export MPF_TENANTID=YOUR_TENANT_ID
+export MPF_SPCLIENTID=YOUR_SP_CLIENT_ID
+export MPF_SPCLIENTSECRET=YOUR_SP_CLIENT_SECRET
+export MPF_SPOBJECTID=YOUR_SP_OBJECT_ID
+export MPF_BICEPEXECPATH="/opt/homebrew/bin/bicep" # Path to the Bicep executable
+
+make test-e2e
+```
+
+### End to End Terraform Tests
+
+The Terraform end to end tests, can take a long time to execute, depending on the resources being created. To run the end to end tests for Terraform, you need to have the following environment variables set, and then execute `make test-e2e-terraform`:
+
+```shell
+export MPF_SUBSCRIPTIONID=YOUR_SUBSCRIPTION_ID
+export MPF_TENANTID=YOUR_TENANT_ID
+export MPF_SPCLIENTID=YOUR_SP_CLIENT_ID
+export MPF_SPCLIENTSECRET=YOUR_SP_CLIENT_SECRET
+export MPF_SPOBJECTID=YOUR_SP_OBJECT_ID
+export MPF_TFPATH=$(which terraform) # Path to the Terraform executable
+
+make test-e2e-terraform
+```
 
 ## Debugging Locally and Contributing
 
