@@ -15,7 +15,7 @@ Following is the detailed flow of how this utility works:
 * The utility **removes any existing Role Assignments for provided Service Principal**
 * A Custom Role (with no assigned permissions) is created
 * The Service Principal (SP) is assigned the new custom role
-* For the above steps the utitity uses the **default Azure CLI credentials** which needs to have permissions to create custom role, and role assignments
+* For the above steps the utitity uses the **default Azure CLI credentials** which needs to have permissions to create custom role, and role assignments. The details of the permissions required by the default Azure CLI credentials are provided in the [Permissions required by default Azure CLI credentials](#permissions-required-by-default-azure-cli-credentials) section.
 * For the following sub steps the **Service Principal Credentials** are used. These sub steps are re-tried till the deployment succeeds
   * Depending on the provider (ARM, Bicep, or Terraform) a deployment is tried
   * If the Service Principal does not have sufficient permissions an authorization error is returned by the deployment. If Authorization errors have occured, they are parsed to fetch the missing scopes and permissions. The [authorizationErrorParser Tests](./pkg/domain/authorizationErrorParser_test.go) provides details of the different kinds of Authorization errors typically received.
@@ -252,6 +252,20 @@ export MPF_TFPATH=$(which terraform) # Path to the Terraform executable
 
 make test-e2e-terraform
 ```
+
+## Permissions required by default Azure CLI credentials
+
+The default Azure CLI credentials used by the utility need to have the following permissions:
+
+* "Microsoft.Authorization/roleDefinitions/read"
+* "Microsoft.Authorization/roleDefinitions/write"
+* "Microsoft.Authorization/roleDefinitions/delete"
+* "Microsoft.Authorization/roleAssignments/read"
+* "Microsoft.Authorization/roleAssignments/write"
+* "Microsoft.Authorization/roleAssignments/delete"
+* "Microsoft.Resources/subscriptions/resourcegroups/delete"
+* "Microsoft.Resources/subscriptions/resourcegroups/read"
+* "Microsoft.Resources/subscriptions/resourcegroups/write"
 
 ## Debugging Locally and Contributing
 
