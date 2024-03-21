@@ -11,6 +11,7 @@ import (
 	resourceGroupManager "github.com/manisbindra/az-mpf/pkg/infrastructure/resourceGroupManager"
 	sproleassignmentmanager "github.com/manisbindra/az-mpf/pkg/infrastructure/spRoleAssignmentManager"
 	"github.com/manisbindra/az-mpf/pkg/usecase"
+	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -30,8 +31,11 @@ func TestTerraformACI(t *testing.T) {
 
 	_, filename, _, _ := runtime.Caller(0)
 	curDir := path.Dir(filename)
+	log.Infof("curDir: %s", curDir)
 	wrkDir := path.Join(curDir, "../samples/terraform/aci")
+	log.Infof("wrkDir: %s", wrkDir)
 	varsFile := path.Join(curDir, "../samples/terraform/aci/dev.vars.tfvars")
+	log.Infof("varsFile: %s", varsFile)
 
 	ctx := context.Background()
 
