@@ -50,6 +50,10 @@ func (a *terraformDeploymentConfig) CleanDeployment(mpfConfig domain.MPFConfig) 
 
 func (a *terraformDeploymentConfig) deployTerraform(mpfConfig domain.MPFConfig) (string, error) {
 
+	log.Infof("workingDir: %s", a.workingDir)
+	log.Infof("varfilePath: %s", a.varFilePath)
+	log.Infof("execPath: %s", a.execPath)
+
 	tf, err := tfexec.NewTerraform(a.workingDir, a.execPath)
 	if err != nil {
 		log.Fatalf("error running NewTerraform: %s", err)

@@ -27,10 +27,18 @@ jobs:
         with:
           go-version: ${{ matrix.go-version }}
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: 1.5.7
+      # - name: Setup Terraform
+      #   uses: hashicorp/setup-terraform@v3
+      #   with:
+      #     terraform_version: 1.5.7
+      - name: Install Terraform
+        run: |
+          curl -Lo terraform.zip https://releases.hashicorp.com/terraform/1.5.7/terraform_1.5.7_linux_amd64.zip
+          unzip terraform.zip
+          # move to working directory
+          sudo mv terraform /usr/local/bin/terraform
+          
+          terraform --version
 
       - name: Install dependencies
         run: go get ./...
@@ -47,22 +55,22 @@ jobs:
 
       - name: Test with Go
         run: |
-          # cd e2eTests
           which terraform
-          export MPF_TFPATH=$(which terraform)
+          export MPF_TFPATH="/usr/local/bin/terraform"
+          $MPF_TFPATH --version
           go install github.com/jstemmer/go-junit-report@latest
           go test ./e2eTests -v -timeout 20m -run TestTerraform | tee TestResults-${{ matrix.go-version }}.txt
-          # | go-junit-report -set-exit-code > TestResults-${{ matrix.go-version }}.xml
+          cat TestResults-${{ matrix.go-version }}.txt | go-junit-report -set-exit-code > TestResults-${{ matrix.go-version }}.xml
           
       - name: Upload Go test results
         uses: actions/upload-artifact@v4
         with:
           name: Go-results-${{ matrix.go-version }}
-          path: TestResults-${{ matrix.go-version }}.txt
+          path: TestResults-${{ matrix.go-version }}.xml
       
-      # - name: Test Summary
-      #   uses: test-summary/action@v1
-      #   with:
-      #     paths: |
-      #       TestResults-${{ matrix.go-version }}.xml  
-      #   if: always()
+      - name: Test Summary
+        uses: test-summary/action@v1
+        with:
+          paths: |
+            TestResults-${{ matrix.go-version }}.xml  
+        if: always()
