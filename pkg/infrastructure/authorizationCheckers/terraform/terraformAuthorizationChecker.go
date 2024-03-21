@@ -52,6 +52,7 @@ func (a *terraformDeploymentConfig) deployTerraform(mpfConfig domain.MPFConfig) 
 
 	log.Infof("workingDir: %s", a.workingDir)
 	log.Infof("varfilePath: %s", a.varFilePath)
+	log.Infof("execPath: %s", a.execPath)
 
 	tf, err := tfexec.NewTerraform(a.workingDir, a.execPath)
 	if err != nil {
