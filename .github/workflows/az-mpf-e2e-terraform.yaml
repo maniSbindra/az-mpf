@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   e2e-terraform:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     env:
       MPF_SUBSCRIPTIONID: ${{ secrets.MPF_SUBSCRIPTIONID }}
       MPF_TENANTID: ${{ secrets.MPF_TENANTID }}
@@ -27,10 +27,18 @@ jobs:
         with:
           go-version: ${{ matrix.go-version }}
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: 1.5.7
+      # - name: Setup Terraform
+      #   uses: hashicorp/setup-terraform@v3
+      #   with:
+      #     terraform_version: 1.5.7
+      - name: Install Terraform
+        run: |
+          curl -Lo terraform.zip https://releases.hashicorp.com/terraform/1.5.7/terraform_1.5.7_linux_amd64.zip
+          unzip terraform.zip
+          # move to working directory
+          sudo mv terraform /usr/local/bin/terraform
+          
+          terraform --version
 
       - name: Install dependencies
         run: go get ./...
@@ -49,10 +57,10 @@ jobs:
         run: |
           # cd e2eTests
           which terraform
-          export MPF_TFPATH=$(which terraform)
+          export MPF_TFPATH="/usr/local/bin/terraform"
           $MPF_TFPATH --version
-          pwd
-          find .
+          # pwd
+          # find .
           go install github.com/jstemmer/go-junit-report@latest
           go test ./e2eTests -v -timeout 20m -run TestTerraform | tee TestResults-${{ matrix.go-version }}.txt
           # | go-junit-report -set-exit-code > TestResults-${{ matrix.go-version }}.xml
