@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   e2e-terraform:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     env:
       MPF_SUBSCRIPTIONID: ${{ secrets.MPF_SUBSCRIPTIONID }}
       MPF_TENANTID: ${{ secrets.MPF_TENANTID }}
