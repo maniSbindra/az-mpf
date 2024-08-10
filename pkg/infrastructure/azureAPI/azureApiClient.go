@@ -20,7 +20,7 @@ type AzureAPIClients struct {
 	ResourceGroupsClient *armresources.ResourceGroupsClient
 
 	// Default CLI Creds
-	DefaultCred           *azidentity.DefaultAzureCredential
+	DefaultCred           *azidentity.AzureCLICredential
 	DefaultAPIBearerToken string
 	// SPCred                *azidentity.ClientSecretCredential
 }
@@ -61,7 +61,7 @@ func (a *AzureAPIClients) SetApiClients(subscriptionId string) error {
 		return err
 	}
 
-	a.DefaultCred, err = azidentity.NewDefaultAzureCredential(nil)
+	a.DefaultCred, err = azidentity.NewAzureCLICredential(nil)
 	if err != nil {
 		// log.Fatal(err)
 		log.Fatal(err)
