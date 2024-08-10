@@ -1,0 +1,62 @@
+name: ARM E2E Tests on Windows
+
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  e2e-arm-windows:
+    runs-on: windows-latest 
+    env:
+      MPF_SUBSCRIPTIONID: ${{ secrets.MPF_SUBSCRIPTIONID }}
+      MPF_TENANTID: ${{ secrets.MPF_TENANTID }}
+      MPF_SPCLIENTID: ${{ secrets.MPF_SPCLIENTID }}
+      MPF_SPCLIENTSECRET: ${{ secrets.MPF_SPCLIENTSECRET }}
+      MPF_SPOBJECTID: ${{ secrets.MPF_SPOBJECTID }}
+    strategy:
+      matrix:
+        go-version: [ '1.21.5' ]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - name: Install dependencies
+        run: go get ./...
+
+      - name: Build
+        run: go build -v ./...
+
+      - name: 'Az CLI login - federated'
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_OID_CLIENT_ID }}
+          tenant-id: ${{ secrets.MPF_TENANTID }}
+          subscription-id: ${{ secrets.MPF_SUBSCRIPTIONID }}
+
+      - name: Test with Go
+        run: |
+          # cd e2eTests
+          $env:MPF_BICEPEXECPATH="C:\Windows\System32\bicep.exe"
+          go install github.com/jstemmer/go-junit-report@latest
+          go test ./e2eTests -v -run TestARM | tee TestResults-${{ matrix.go-version }}.txt
+          type TestResults-${{ matrix.go-version }}.txt | go-junit-report -set-exit-code > TestResults-${{ matrix.go-version }}.xml
+          
+      - name: Upload Go test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: Go-results-${{ matrix.go-version }}
+          path: TestResults-${{ matrix.go-version }}.xml
+      
+      - name: Test Summary
+        uses: test-summary/action@v1
+        with:
+          paths: |
+            TestResults-${{ matrix.go-version }}.xml  
+        if: always()
