@@ -31,8 +31,12 @@ provider "azurerm" {
 #   name     = var.resource_group_name
 # }
 
+# add random id to resource group name to avoid conflicts
+resource "random_id" "rg" {
+  byte_length = 8
+}
 resource "azurerm_resource_group" "rg" {
-  name     = var.resource_group_name
+  name     = "rg-${random_id.rg.hex}"
   location = var.location
 }
 

@@ -58,6 +58,11 @@ jobs:
           which terraform
           export MPF_TFPATH="/usr/local/bin/terraform"
           $MPF_TFPATH --version
+          pushd .
+          cd ./samples/terraform/aci/
+          $MPF_TFPATH init
+          popd
+
           go install github.com/jstemmer/go-junit-report@latest
           go test ./e2eTests -v -timeout 20m -run TestTerraform | tee TestResults-${{ matrix.go-version }}.txt
           cat TestResults-${{ matrix.go-version }}.txt | go-junit-report -set-exit-code > TestResults-${{ matrix.go-version }}.xml
