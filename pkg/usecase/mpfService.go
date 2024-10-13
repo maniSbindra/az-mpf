@@ -71,7 +71,7 @@ func (s *MPFService) GetMinimumPermissionsRequired() (domain.MPFResult, error) {
 	err := s.spRoleAssignmentManager.DetachRolesFromSP(s.ctx, s.mpfConfig.SubscriptionID, s.mpfConfig.SP.SPObjectID, s.mpfConfig.Role)
 	if err != nil {
 		log.Warnf("Unable to delete Role Assignments: %v\n", err)
-		s.returnMPFResult(err)
+		return s.returnMPFResult(err)
 	}
 	log.Info("Deleted all existing role assignments for service principal \n")
 
@@ -82,7 +82,7 @@ func (s *MPFService) GetMinimumPermissionsRequired() (domain.MPFResult, error) {
 	err = s.spRoleAssignmentManager.CreateUpdateCustomRole(s.mpfConfig.SubscriptionID, s.mpfConfig.Role, s.initialPermissionsToAdd)
 	if err != nil {
 		log.Warn(err)
-		s.returnMPFResult(err)
+		return s.returnMPFResult(err)
 	}
 	log.Infoln("Custom role initialized successfully")
 
@@ -92,7 +92,7 @@ func (s *MPFService) GetMinimumPermissionsRequired() (domain.MPFResult, error) {
 	err = s.spRoleAssignmentManager.AssignRoleToSP(s.mpfConfig.SubscriptionID, s.mpfConfig.SP.SPObjectID, s.mpfConfig.Role)
 	if err != nil {
 		log.Warn(err)
-		s.returnMPFResult(err)
+		return s.returnMPFResult(err)
 	}
 	log.Infoln("New Custom Role assigned to service principal successfully")
 
@@ -115,7 +115,7 @@ func (s *MPFService) GetMinimumPermissionsRequired() (domain.MPFResult, error) {
 
 		if err != nil {
 			log.Errorf("Non Authorization error received: %v \n", err)
-			s.returnMPFResult(err)
+			return s.returnMPFResult(err)
 		}
 
 		log.Debugln("Deployment Authorization Error:", authErrMesg)
@@ -123,7 +123,7 @@ func (s *MPFService) GetMinimumPermissionsRequired() (domain.MPFResult, error) {
 		scpMp, err := domain.GetScopePermissionsFromAuthError(authErrMesg)
 		if err != nil {
 			log.Warnf("Could Not Parse Deployment Authorization Error: %v \n", err)
-			s.returnMPFResult(err)
+			return s.returnMPFResult(err)
 		}
 
 		log.Infoln("Successfully Parsed Deployment Authorization Error")
@@ -161,14 +161,14 @@ func (s *MPFService) GetMinimumPermissionsRequired() (domain.MPFResult, error) {
 		if err != nil {
 			log.Infoln("Error when adding permission/scope to role: \n", err)
 			log.Warn(err)
-			s.returnMPFResult(err)
+			return s.returnMPFResult(err)
 		}
 		log.Infoln("Permission/scope added to role successfully")
 
 		iterCount++
 		if iterCount == maxIterations {
 			log.Warnln("max iterations for fetching authorization errors reached, exiting...")
-			s.returnMPFResult(err)
+			return s.returnMPFResult(err)
 		}
 	}
 
