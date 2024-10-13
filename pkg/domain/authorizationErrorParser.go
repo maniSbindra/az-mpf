@@ -2,6 +2,7 @@ package domain
 
 import (
 	"errors"
+	"fmt"
 	"regexp"
 	"strings"
 
@@ -42,7 +43,7 @@ func GetScopePermissionsFromAuthError(authErrMesg string) (map[string][]string, 
 
 	// If map is empty, return error
 	if len(resMap) == 0 {
-		return nil, errors.New("Could not parse deployment error for scope/permissions")
+		return nil, errors.New(fmt.Sprintf("Could not parse deployment error for scope/permissions: %s", authErrMesg))
 	}
 
 	// // For each /write permission add a /read permission to map

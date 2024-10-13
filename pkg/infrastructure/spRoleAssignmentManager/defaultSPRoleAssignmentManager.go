@@ -80,8 +80,13 @@ func (r *SPRoleAssignmentManager) CreateUpdateCustomRole(subscription string, ro
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("User-Agent", "Go HTTP Client")
 
+	defaultApiBearerToken, err := r.azAPIClient.GetDefaultAPIBearerToken()
+	if err != nil {
+		return err
+	}
+
 	// add bearer token to header
-	req.Header.Add("Authorization", "Bearer "+r.azAPIClient.DefaultAPIBearerToken)
+	req.Header.Add("Authorization", "Bearer "+defaultApiBearerToken)
 
 	// make request
 	resp, err := client.Do(req)
@@ -140,8 +145,13 @@ func (r *SPRoleAssignmentManager) AssignRoleToSP(subscription string, SPOBjectID
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("User-Agent", "Go HTTP Client")
 
+	defaultApiBearerToken, err := r.azAPIClient.GetDefaultAPIBearerToken()
+	if err != nil {
+		return err
+	}
+
 	// add bearer token to header
-	req.Header.Add("Authorization", "Bearer "+r.azAPIClient.DefaultAPIBearerToken)
+	req.Header.Add("Authorization", "Bearer "+defaultApiBearerToken)
 
 	// make request
 	resp, err := client.Do(req)
@@ -257,8 +267,13 @@ func (r *SPRoleAssignmentManager) DeleteCustomRole(subscription string, role dom
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("User-Agent", "Go HTTP Client")
 
+	defaultApiBearerToken, err := r.azAPIClient.GetDefaultAPIBearerToken()
+	if err != nil {
+		return err
+	}
+
 	// add bearer token to header
-	req.Header.Add("Authorization", "Bearer "+r.azAPIClient.DefaultAPIBearerToken)
+	req.Header.Add("Authorization", "Bearer "+defaultApiBearerToken)
 
 	// make request
 	resp, err := client.Do(req)
