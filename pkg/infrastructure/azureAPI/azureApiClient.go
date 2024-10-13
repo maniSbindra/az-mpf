@@ -2,6 +2,7 @@ package azureAPI
 
 import (
 	"context"
+	"time"
 
 	"github.com/Azure/azure-sdk-for-go/profiles/latest/authorization/mgmt/authorization"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
@@ -20,15 +21,17 @@ type AzureAPIClients struct {
 	ResourceGroupsClient *armresources.ResourceGroupsClient
 
 	// Default CLI Creds
-	DefaultCred           *azidentity.DefaultAzureCredential
-	DefaultAPIBearerToken string
+	DefaultCred                         *azidentity.DefaultAzureCredential
+	defaultAPIBearerToken               string
+	defaultAPIBearerTokenLastCachedTime time.Time
 	// SPCred                *azidentity.ClientSecretCredential
 }
+
+const defaultTokenCacheDuration = 10 * time.Minute
 
 func NewAzureAPIClients(subscriptionID string) *AzureAPIClients {
 	a := &AzureAPIClients{}
 	a.SetApiClients(subscriptionID)
-	a.SetDefaultAPIAccessBearerToken()
 	return a
 }
 
@@ -114,22 +117,20 @@ func (a *AzureAPIClients) GetSPBearerToken(tenantID, spClientID, spClientSecret 
 
 }
 
-func (a *AzureAPIClients) SetDefaultAPIAccessBearerToken() error {
-	// Get the bearer token for the API access
-	if a.DefaultAPIBearerToken != "" {
-		log.Infoln("Default API Bearer Token already set")
-		return nil
+func (a *AzureAPIClients) GetDefaultAPIBearerToken() (bearerToken string, err error) {
+
+	if a.defaultAPIBearerToken == "" || time.Since(a.defaultAPIBearerTokenLastCachedTime) > defaultTokenCacheDuration {
+		bearerToken, err = a.getBearerToken(a.DefaultCred)
+		if err != nil {
+			return "", err
+		}
+
+		a.defaultAPIBearerToken = bearerToken
+		a.defaultAPIBearerTokenLastCachedTime = time.Now()
+		log.Infoln("Default API Bearer Token set")
 	}
 
-	// Get the bearer token
-	// log.Infoln("Getting new Default API Bearer Token")
-	bearerToken, err := a.getBearerToken(a.DefaultCred)
-	if err != nil {
-		return err
-	}
-
-	a.DefaultAPIBearerToken = bearerToken
-	return nil
+	return a.defaultAPIBearerToken, nil
 }
 
 // func (m *MinPermFinder) RefreshSPAPIAccessBearerToken() error {

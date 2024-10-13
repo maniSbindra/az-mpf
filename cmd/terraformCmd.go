@@ -5,12 +5,12 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"os"
 
 	"github.com/manisbindra/az-mpf/pkg/infrastructure/authorizationCheckers/terraform"
 	resourceGroupManager "github.com/manisbindra/az-mpf/pkg/infrastructure/resourceGroupManager"
 	sproleassignmentmanager "github.com/manisbindra/az-mpf/pkg/infrastructure/spRoleAssignmentManager"
-	"github.com/manisbindra/az-mpf/pkg/presentation"
 	"github.com/manisbindra/az-mpf/pkg/usecase"
 	log "github.com/sirupsen/logrus"
 
@@ -106,21 +106,17 @@ func getMPFTerraform(cmd *cobra.Command, args []string) {
 	deploymentAuthorizationCheckerCleaner = terraform.NewTerraformAuthorizationChecker(flgWorkingDir, flgTFPath, flgVarFilePath)
 	mpfService = usecase.NewMPFService(ctx, rgManager, spRoleAssignmentManager, deploymentAuthorizationCheckerCleaner, mpfConfig, initialPermissionsToAdd, permissionsToAddToResult, false, true, false)
 
+	displayOptions := getDislayOptions(flgShowDetailedOutput, flgJSONOutput, mpfConfig.ResourceGroup.ResourceGroupResourceID)
+
 	mpfResult, err := mpfService.GetMinimumPermissionsRequired()
 	if err != nil {
+		if len(mpfResult.RequiredPermissions) > 0 {
+			fmt.Println("Error occurred while getting minimum permissions required. However, some permissions were identified prior to the error.")
+			displayResult(mpfResult, displayOptions)
+		}
 		log.Fatal(err)
 	}
 
-	displayOptions := presentation.DisplayOptions{
-		ShowDetailedOutput:             flgShowDetailedOutput,
-		JSONOutput:                     flgJSONOutput,
-		DefaultResourceGroupResourceID: mpfConfig.ResourceGroup.ResourceGroupResourceID,
-	}
-
-	resultDisplayer := presentation.NewMPFResultDisplayer(mpfResult, displayOptions)
-	err = resultDisplayer.DisplayResult(os.Stdout)
-	if err != nil {
-		log.Fatal(err)
-	}
+	displayResult(mpfResult, displayOptions)
 
 }

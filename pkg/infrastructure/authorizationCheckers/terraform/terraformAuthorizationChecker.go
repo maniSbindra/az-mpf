@@ -2,6 +2,7 @@ package terraform
 
 import (
 	"context"
+	"os"
 	"strings"
 
 	"github.com/hashicorp/terraform-exec/tfexec"
@@ -16,7 +17,15 @@ type terraformDeploymentConfig struct {
 	varFilePath string
 }
 
+// This file is created once the destroy phase is entered
+const TFDestroyStateEnteredFileName = "azmpfEnteredDestroyPhase.txt"
+
 func NewTerraformAuthorizationChecker(workDir string, execPath string, varFilePath string) *terraformDeploymentConfig {
+	err := deleteEnteredDestroyPhaseStateFile(workDir, TFDestroyStateEnteredFileName)
+	if err != nil {
+		log.Warnf("error deleting enteredDestroyPhaseStateFile: %s", err)
+	}
+
 	return &terraformDeploymentConfig{
 		workingDir:  workDir,
 		execPath:    execPath,
@@ -30,6 +39,12 @@ func (a *terraformDeploymentConfig) GetDeploymentAuthorizationErrors(mpfConfig d
 }
 
 func (a *terraformDeploymentConfig) CleanDeployment(mpfConfig domain.MPFConfig) error {
+
+	err := deleteEnteredDestroyPhaseStateFile(a.workingDir, TFDestroyStateEnteredFileName)
+	if err != nil {
+		log.Warnf("error deleting enteredDestroyPhaseStateFile: %s", err)
+	}
+
 	tf, err := tfexec.NewTerraform(a.workingDir, a.execPath)
 	if err != nil {
 		log.Fatalf("error running NewTerraform: %s", err)
@@ -70,26 +85,37 @@ func (a *terraformDeploymentConfig) deployTerraform(mpfConfig domain.MPFConfig) 
 
 	err = tf.Init(context.Background())
 
+	inDestroyPhase := doesEnteredDestroyPhaseStateFileExist(a.workingDir, TFDestroyStateEnteredFileName)
+
 	if err != nil {
 		log.Fatalf("error running Init: %s", err)
 	}
 
-	log.Infoln("in apply phase")
-	err = tf.Apply(a.ctx, tfexec.VarFile(a.varFilePath))
+	if !inDestroyPhase {
+		log.Infoln("in apply phase")
+		err = tf.Apply(a.ctx, tfexec.VarFile(a.varFilePath))
 
-	if err != nil {
-		errorMsg := err.Error()
-		log.Debugln(errorMsg)
+		if err != nil {
+			errorMsg := err.Error()
+			log.Debugln(errorMsg)
 
-		if strings.Contains(errorMsg, "Authorization") {
-			return errorMsg, nil
+			if strings.Contains(errorMsg, "Authorization") {
+				return errorMsg, nil
+			}
+
+			log.Warnf("terraform apply: non authorizaton error occured: %s", errorMsg)
+
 		}
-
-		log.Warnf("terraform apply: non authorizaton error occured: %s", errorMsg)
-
 	}
 
 	log.Infoln("in destroy phase")
+	if !inDestroyPhase {
+		err = createEnteredDestroyPhaseStateFile(a.workingDir, TFDestroyStateEnteredFileName)
+		if err != nil {
+			log.Warnf("error creating enteredDestroyPhaseStateFile: %s", err)
+		}
+	}
+
 	err = tf.Destroy(a.ctx, tfexec.VarFile(a.varFilePath))
 
 	if err != nil {
@@ -105,4 +131,49 @@ func (a *terraformDeploymentConfig) deployTerraform(mpfConfig domain.MPFConfig) 
 
 	return "", nil
 
+}
+
+func doesEnteredDestroyPhaseStateFileExist(workingDir string, fileName string) bool {
+	enteredDestroyPhaseStateFileName := workingDir + "/" + fileName
+
+	if _, err := os.Stat(enteredDestroyPhaseStateFileName); err == nil {
+		log.Infof("%s file exists \n", enteredDestroyPhaseStateFileName)
+		return true
+	}
+	log.Infof("%s file does not exist \n", enteredDestroyPhaseStateFileName)
+	return false
+}
+
+func createEnteredDestroyPhaseStateFile(workingDir string, fileName string) error {
+	enteredDestroyPhaseStateFileName := workingDir + "/" + fileName
+
+	if _, err := os.Stat(enteredDestroyPhaseStateFileName); err == nil {
+		log.Infof("%s file already exists \n", enteredDestroyPhaseStateFileName)
+		return nil
+	}
+
+	_, err := os.Create(enteredDestroyPhaseStateFileName)
+	if err != nil {
+		log.Warnf("error creating %s file: %s", enteredDestroyPhaseStateFileName, err)
+		return err
+	}
+	log.Infof("%s created enteredDestroyPhaseStateFile file \n", enteredDestroyPhaseStateFileName)
+	return nil
+}
+
+func deleteEnteredDestroyPhaseStateFile(workingDir string, fileName string) error {
+	enteredDestroyPhaseStateFileName := workingDir + "/" + fileName
+
+	if _, err := os.Stat(enteredDestroyPhaseStateFileName); err != nil {
+		log.Infof("%s file does not exist \n", enteredDestroyPhaseStateFileName)
+		return nil
+	}
+
+	err := os.Remove(enteredDestroyPhaseStateFileName)
+	if err != nil {
+		log.Warnf("error deleting %s file: %s", enteredDestroyPhaseStateFileName, err)
+		return err
+	}
+	log.Infof("%s deleted enteredDestroyPhaseStateFile file \n", enteredDestroyPhaseStateFileName)
+	return nil
 }
