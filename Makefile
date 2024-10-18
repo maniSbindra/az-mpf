@@ -19,7 +19,10 @@ all: clean build
 build:
 	@echo "Building $(BINARY_NAME)..."
 	@mkdir -p $(OUTPUT_DIR)
-	$(GOBUILD) -o $(OUTPUT_DIR)/$(BINARY_NAME) ./cmd
+	# $(GOBUILD) -o $(OUTPUT_DIR)/$(BINARY_NAME)  ./cmd
+	$(GOBUILD) -ldflags "-X 'main.version=$(shell git describe --tags --always --dirty)' -X 'main.commit=$(shell git rev-parse --short HEAD)' -X 'main.date=$(shell date -u '+%Y-%m-%d %H:%M:%S')'" -o $(OUTPUT_DIR)/$(BINARY_NAME) ./cmd
+
+
 
 test:
 	@echo "Running tests..."
