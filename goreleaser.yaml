@@ -37,7 +37,7 @@ builds:
     - amd64
     - arm64
   ldflags:
-    - -s {{.Env.VERSION_LDFLAGS}} 
+    - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{ .CommitDate }}
 
 - id: darwin
   dir: cmd
@@ -63,7 +63,7 @@ builds:
     - amd64
     - arm64
   ldflags:
-    - -s {{.Env.VERSION_LDFLAGS}} 
+    - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{ .CommitDate }}
 
 - id: windows
   dir: cmd
@@ -90,7 +90,7 @@ builds:
     - arm64
   ldflags:
     - -buildmode=exe
-    - -s {{.Env.VERSION_LDFLAGS}} 
+    - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{ .CommitDate }} 
 
 checksum:
   # Algorithm to be used.
