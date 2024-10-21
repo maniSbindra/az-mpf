@@ -1,0 +1,24 @@
+{
+    "name": "Dev Container",
+    "image": "mcr.microsoft.com/vscode/devcontainers/base:ubuntu",
+    "features": {
+        "ghcr.io/devcontainers/features/azure-cli:latest": {
+			"version": "2.65.0",
+            "installBicep": true
+		},
+        "ghcr.io/devcontainers/features/terraform:1": {
+            "version": "1.9.7"
+        },
+        "ghcr.io/devcontainers/features/go:1": {
+            "version": "1.21.5"
+          },
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-azuretools.vscode-bicep",
+                "hashicorp.terraform"
+            ]
+        }
+    }
+}
