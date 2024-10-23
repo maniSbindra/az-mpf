@@ -51,9 +51,9 @@ func (a *terraformDeploymentConfig) CleanDeployment(mpfConfig domain.MPFConfig) 
 	}
 
 	err = tf.Init(context.Background())
-
 	if err != nil {
-		log.Fatalf("error running Init: %s", err)
+		log.Warnf("error running Init: %s", err)
+		return err
 	}
 
 	err = tf.Destroy(a.ctx, tfexec.VarFile(a.varFilePath))
@@ -88,12 +88,18 @@ func (a *terraformDeploymentConfig) deployTerraform(mpfConfig domain.MPFConfig) 
 	inDestroyPhase := doesEnteredDestroyPhaseStateFileExist(a.workingDir, TFDestroyStateEnteredFileName)
 
 	if err != nil {
-		log.Fatalf("error running Init: %s", err)
+		log.Warnf("error running Init: %s", err)
+		return "", err
 	}
 
 	if !inDestroyPhase {
 		log.Infoln("in apply phase")
-		err = tf.Apply(a.ctx, tfexec.VarFile(a.varFilePath))
+
+		if a.varFilePath == "" {
+			err = tf.Apply(a.ctx)
+		} else {
+			err = tf.Apply(a.ctx, tfexec.VarFile(a.varFilePath))
+		}
 
 		if err != nil {
 			errorMsg := err.Error()
@@ -104,6 +110,7 @@ func (a *terraformDeploymentConfig) deployTerraform(mpfConfig domain.MPFConfig) 
 			}
 
 			log.Warnf("terraform apply: non authorizaton error occured: %s", errorMsg)
+			return errorMsg, err
 
 		}
 	}
@@ -116,7 +123,11 @@ func (a *terraformDeploymentConfig) deployTerraform(mpfConfig domain.MPFConfig) 
 		}
 	}
 
-	err = tf.Destroy(a.ctx, tfexec.VarFile(a.varFilePath))
+	if a.varFilePath == "" {
+		err = tf.Destroy(a.ctx)
+	} else {
+		err = tf.Destroy(a.ctx, tfexec.VarFile(a.varFilePath))
+	}
 
 	if err != nil {
 		errorMsg := err.Error()

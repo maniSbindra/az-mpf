@@ -114,7 +114,7 @@ func (s *MPFService) GetMinimumPermissionsRequired() (domain.MPFResult, error) {
 		}
 
 		if err != nil {
-			log.Errorf("Non Authorization error received: %v \n", err)
+			log.Warnf("Non Authorization error received: %v \n", err)
 			return s.returnMPFResult(err)
 		}
 
