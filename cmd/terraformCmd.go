@@ -47,7 +47,7 @@ func NewTerraformCommand() *cobra.Command {
 	terraformCmd.MarkFlagRequired("workingDir")
 
 	terraformCmd.Flags().StringVarP(&flgVarFilePath, "varFilePath", "", "", "Path to Terraform Variable File")
-	terraformCmd.MarkFlagRequired("varFilePath")
+	// terraformCmd.MarkFlagRequired("varFilePath")
 
 	return terraformCmd
 }
@@ -80,13 +80,17 @@ func getMPFTerraform(cmd *cobra.Command, args []string) {
 		log.Errorf("Error getting absolute path for terraform executable: %v\n", err)
 	}
 
-	if _, err := os.Stat(flgVarFilePath); os.IsNotExist(err) {
-		log.Fatalf("Terraform Variable File does not exist: %s\n", flgVarFilePath)
-	}
+	if flgVarFilePath != "" {
 
-	flgVarFilePath, err := getAbsolutePath(flgVarFilePath)
-	if err != nil {
-		log.Errorf("Error getting absolute path for terraform variable file: %v\n", err)
+		if _, err := os.Stat(flgVarFilePath); os.IsNotExist(err) {
+			log.Fatalf("Terraform Variable File does not exist: %s\n", flgVarFilePath)
+		}
+
+		flgVarFilePath, err = getAbsolutePath(flgVarFilePath)
+		if err != nil {
+			log.Errorf("Error getting absolute path for terraform variable file: %v\n", err)
+		}
+
 	}
 
 	ctx := context.Background()
