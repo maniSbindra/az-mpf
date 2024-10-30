@@ -8,6 +8,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
+	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/authorization/armauthorization/v3"
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/resources/armresources"
 	"github.com/Azure/go-autorest/autorest"
 	"github.com/Azure/go-autorest/autorest/azure/auth"
@@ -15,7 +16,8 @@ import (
 )
 
 type AzureAPIClients struct {
-	RoleAssignmentsClient authorization.RoleAssignmentsClient
+	RoleAssignmentsClient         authorization.RoleAssignmentsClient
+	RoleAssignmentsDeletionClient *armauthorization.RoleAssignmentsClient
 	// RoleDefinitionsClient authorization.RoleDefinitionsClient
 	DeploymentsClient    *armresources.DeploymentsClient
 	ResourceGroupsClient *armresources.ResourceGroupsClient
@@ -76,6 +78,13 @@ func (a *AzureAPIClients) SetApiClients(subscriptionId string) error {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	roleAssignmentsDeletionClientFactory, err := armauthorization.NewClientFactory(subscriptionId, a.DefaultCred, nil)
+	if err != nil {
+		log.Fatalf("failed to create role assignments deletion client factory: %v", err)
+	}
+
+	a.RoleAssignmentsDeletionClient = roleAssignmentsDeletionClientFactory.NewRoleAssignmentsClient()
 
 	// Set RoleDefinitionsClient
 	// a.RoleDefinitionsClient = authorization.NewRoleDefinitionsClient(subscriptionId)
