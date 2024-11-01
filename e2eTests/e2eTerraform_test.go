@@ -60,7 +60,6 @@ func TestTerraformACI(t *testing.T) {
 		t.Error(err)
 	}
 
-	//check if mpfResult.RequiredPermissions is not empty and has 54 permissions for scope ResourceGroupResourceID
 	assert.NotEmpty(t, mpfResult.RequiredPermissions)
 	assert.Equal(t, 8, len(mpfResult.RequiredPermissions[mpfConfig.ResourceGroup.ResourceGroupResourceID]))
 }
@@ -107,9 +106,54 @@ func TestTerraformACINoTfvarsFile(t *testing.T) {
 		t.Error(err)
 	}
 
-	//check if mpfResult.RequiredPermissions is not empty and has 54 permissions for scope ResourceGroupResourceID
 	assert.NotEmpty(t, mpfResult.RequiredPermissions)
 	assert.Equal(t, 5, len(mpfResult.RequiredPermissions[mpfConfig.ResourceGroup.ResourceGroupResourceID]))
+}
+
+func TestTerraformModuleTest(t *testing.T) {
+
+	mpfArgs, err := getTestingMPFArgs()
+	if err != nil {
+		t.Skip("required environment variables not set, skipping end to end test")
+	}
+	mpfArgs.MPFMode = "terraform"
+
+	var tfpath string
+	if os.Getenv("MPF_TFPATH") == "" {
+		t.Skip("Terraform Path TF_PATH not set, skipping end to end test")
+	}
+	tfpath = os.Getenv("MPF_TFPATH")
+
+	_, filename, _, _ := runtime.Caller(0)
+	curDir := path.Dir(filename)
+	log.Infof("curDir: %s", curDir)
+	wrkDir := path.Join(curDir, "../samples/terraform/module-test")
+	log.Infof("wrkDir: %s", wrkDir)
+	ctx := context.Background()
+
+	mpfConfig := getMPFConfig(mpfArgs)
+
+	// azAPIClient := azureAPI.NewAzureAPIClients(mpfArgs.SubscriptionID)
+	var rgManager usecase.ResourceGroupManager
+	var spRoleAssignmentManager usecase.ServicePrincipalRolemAssignmentManager
+	rgManager = resourceGroupManager.NewResourceGroupManager(mpfArgs.SubscriptionID)
+	spRoleAssignmentManager = sproleassignmentmanager.NewSPRoleAssignmentManager(mpfArgs.SubscriptionID)
+
+	var deploymentAuthorizationCheckerCleaner usecase.DeploymentAuthorizationCheckerCleaner
+	var mpfService *usecase.MPFService
+
+	initialPermissionsToAdd := []string{"Microsoft.Resources/deployments/read", "Microsoft.Resources/deployments/write"}
+	permissionsToAddToResult := []string{"Microsoft.Resources/deployments/read", "Microsoft.Resources/deployments/write"}
+	deploymentAuthorizationCheckerCleaner = terraform.NewTerraformAuthorizationChecker(wrkDir, tfpath, "")
+	mpfService = usecase.NewMPFService(ctx, rgManager, spRoleAssignmentManager, deploymentAuthorizationCheckerCleaner, mpfConfig, initialPermissionsToAdd, permissionsToAddToResult, false, true, false)
+
+	mpfResult, err := mpfService.GetMinimumPermissionsRequired()
+	if err != nil {
+		t.Error(err)
+	}
+
+	assert.NotEmpty(t, mpfResult.RequiredPermissions)
+	assert.Equal(t, 8, len(mpfResult.RequiredPermissions[mpfConfig.ResourceGroup.ResourceGroupResourceID]))
 }
 
 //

@@ -74,11 +74,40 @@ func (a *terraformDeploymentConfig) deployTerraform(mpfConfig domain.MPFConfig) 
 		log.Fatalf("error running NewTerraform: %s", err)
 	}
 
+	pathEnvVal := os.Getenv("PATH")
+	var tfLogLevel string
+
+	tfLogPathEnvVal := os.Getenv("TF_LOG_PATH")
+	if tfLogPathEnvVal == "" {
+		tfLogPathEnvVal = a.workingDir + "/terraform.log"
+	}
+
+	switch log.GetLevel() {
+	case log.InfoLevel:
+		tfLogLevel = "INFO"
+	case log.WarnLevel:
+		tfLogLevel = "WARN"
+	case log.DebugLevel:
+		tfLogLevel = "DEBUG"
+	case log.TraceLevel:
+		tfLogLevel = "TRACE"
+	default:
+		tfLogLevel = "ERROR"
+	}
+
+	if tfLogLevel != "ERROR" {
+		tf.SetLog(tfLogLevel)
+		tf.SetLogPath(tfLogPathEnvVal)
+		tf.SetStderr(os.Stderr)
+		tf.SetStdout(os.Stdout)
+	}
+
 	envVars := map[string]string{
 		"ARM_CLIENT_ID":       mpfConfig.SP.SPClientID,
 		"ARM_CLIENT_SECRET":   mpfConfig.SP.SPClientSecret,
 		"ARM_SUBSCRIPTION_ID": mpfConfig.SubscriptionID,
 		"ARM_TENANT_ID":       mpfConfig.TenantID,
+		"PATH":                pathEnvVal,
 	}
 
 	tf.SetEnv(envVars)
