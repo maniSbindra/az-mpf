@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/manisbindra/az-mpf/pkg/domain"
@@ -27,6 +28,35 @@ func NewSPRoleAssignmentManager(subscriptionID string) *SPRoleAssignmentManager 
 }
 
 func (r *SPRoleAssignmentManager) CreateUpdateCustomRole(subscription string, role domain.Role, permissions []string) error {
+	retryCount := 3
+	permissionsToAdd := permissions
+
+	for i := 0; i < retryCount; i++ {
+		log.Debugf("Creating/Updating Role Definition: %s, Retry: %d", role.RoleDefinitionName, i+1)
+		err := r.createUpdateCustomRole(subscription, role, permissionsToAdd)
+		if err != nil && strings.Contains(err.Error(), "InvalidActionOrNotAction") {
+			errMsg := err.Error()
+			log.Warnf("InvalidActionOrNotAction error occured. Atempting to remove invalid action...")
+			actionsToRemove, err := domain.GetDeleteActionFromInvalidActionOrNotActionError(errMsg)
+			if err != nil {
+				log.Warnf("Could not get actions to remove from error: %s", err.Error())
+				return err
+			}
+			log.Debug("Filtering Invalid Actions: ", actionsToRemove)
+			permissionsToAdd = filterInvalidActions(permissionsToAdd, actionsToRemove)
+			continue // retry
+		}
+		if err != nil { // not retrying for other errors
+			log.Debugf("Error when updating role: %s", err.Error())
+			return err
+		}
+		log.Infof("Role definition created/updated successfully")
+		break
+	}
+	return nil
+}
+
+func (r *SPRoleAssignmentManager) createUpdateCustomRole(subscription string, role domain.Role, permissions []string) error {
 
 	// rgScope := fmt.Sprintf("/subscriptions/%s/resourceGroups/%s", subscription, resourceGroupName)
 	subScope := fmt.Sprintf("/subscriptions/%s", subscription)
@@ -100,9 +130,10 @@ func (r *SPRoleAssignmentManager) CreateUpdateCustomRole(subscription string, ro
 		return err
 	}
 
-	// print response body
-	// fmt.Println(string(body))
 	log.Debugln(string(body))
+	if strings.Contains(string(body), "InvalidActionOrNotAction") {
+		return fmt.Errorf("InvalidActionOrNotAction: %s", string(body))
+	}
 
 	return nil
 }
@@ -290,4 +321,23 @@ func (r *SPRoleAssignmentManager) DeleteCustomRole(subscription string, role dom
 	log.Infoln("Role definition deleted successfully")
 
 	return nil
+}
+
+func stringExistsInSlice(s string, sl []string) bool {
+	for _, v := range sl {
+		if v == s {
+			return true
+		}
+	}
+	return false
+}
+
+func filterInvalidActions(permissions []string, invalidActions []string) []string {
+	var validPermissions []string
+	for _, permission := range permissions {
+		if !stringExistsInSlice(permission, invalidActions) {
+			validPermissions = append(validPermissions, permission)
+		}
+	}
+	return validPermissions
 }

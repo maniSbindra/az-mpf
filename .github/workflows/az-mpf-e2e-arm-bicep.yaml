@@ -3,6 +3,9 @@ name: ARM and Bicep E2E Tests
 on:
   workflow_dispatch:
 
+  schedule:
+    - cron: '0 0 * * *'
+
 permissions:
   id-token: write
   contents: read

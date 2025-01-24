@@ -78,6 +78,8 @@ The commands can be used with flags or environment variables. The following are 
 | tfPath               | MPF_TFPATH               | Required           | Path to the Terraform executable                                                                             |
 | workingDir           | MPF_WORKINGDIR           | Required           | Path to the Terraform module directory                                                                             |
 | varFilePath          | MPF_VARFILEPATH          | Optional           | Path to the Terraform variables file                                                                             |
+| importExistingResourcesToState | MPF_IMPORTEXISTINGRESOURCESTOSTATE | Optional | Default Value is true. This is required for some scenarios as described in the [Known Issues - Import Errors](./docs/known-issues-and-workarounds.MD#existing-resource--import-errors) |
+| targetModule        | MPF_TARGETMODULE         | Optional           | Target module to be used for the Terraform deployment |                                                                             |
 
 
 ## Installation
@@ -88,9 +90,9 @@ For example, to download the latest version for Windows:
 
 ```shell
 # Please change version in the URL to the latest version
-curl -LO https://github.com/maniSbindra/az-mpf/releases/download/v0.8.5/az-mpf_0.8.5_windows_amd64.tar.gz
-tar -xzf az-mpf_0.8.5_windows_amd64.tar.gz
-mv az-mpf_0.8.5_windows_amd64 az-mpf.exe
+curl -LO https://github.com/maniSbindra/az-mpf/releases/download/v0.9.0/az-mpf_0.9.0_windows_amd64.tar.gz
+tar -xzf az-mpf_0.9.0_windows_amd64.tar.gz
+mv az-mpf_0.9.0_windows_amd64 az-mpf.exe
 chmod +x ./az-mpf.exe
 ```
 
@@ -98,29 +100,29 @@ And for Mac Arm64:
   
 ```shell
 # Please change version in the URL to the latest version
-curl -LO https://github.com/maniSbindra/az-mpf/releases/download/v0.8.5/az-mpf_0.8.5_darwin_arm64.tar.gz
-tar -xzf az-mpf_0.8.5_darwin_arm64.tar.gz
+curl -LO https://github.com/maniSbindra/az-mpf/releases/download/v0.9.0/az-mpf_0.9.0_darwin_arm64.tar.gz
+tar -xzf az-mpf_0.9.0_darwin_arm64.tar.gz
 mv az-mpf-darwin-arm64 az-mpf
 chmod +x ./az-mpf
 ```
 
 ## Verify Release Binaries using SLSA Verifier
 
-The release binaries are signed using the SLSA (Supply Chain Levels for Software Artifacts) framework. You can verify the release binaries using the [SLSA Verifier](https://github.com/slsa-framework/slsa-verifier). The following steps show how to verify the release binary for darwin/arm64 against release 0.8.5, using the SLSA Verifier:
+The release binaries are signed using the SLSA (Supply Chain Levels for Software Artifacts) framework. You can verify the release binaries using the [SLSA Verifier](https://github.com/slsa-framework/slsa-verifier). The following steps show how to verify the release binary for darwin/arm64 against release 0.9.0, using the SLSA Verifier:
 
 Note:! There was an issue with provenance generation of this release. This will be addressed as a part of [issue #52](https://github.com/maniSbindra/az-mpf/issues/52)
 
 ```shell
 # download arm64 darwin release binary and the multiple.intoto.jsonl file
-curl -LO https://github.com/maniSbindra/az-mpf/releases/download/v0.8.5/az-mpf_0.8.5_darwin_arm64.tar.gz
-curl -LO https://github.com/maniSbindra/az-mpf/releases/download/v0.8.5/multiple.intoto.jsonl
+curl -LO https://github.com/maniSbindra/az-mpf/releases/download/v0.9.0/az-mpf_0.9.0_darwin_arm64.tar.gz
+curl -LO https://github.com/maniSbindra/az-mpf/releases/download/v0.9.0/multiple.intoto.jsonl
 
 # modify path to the slsa-verifier binary as per your installation and verify the release binary
-$ /PATH_TO_VERIFER/slsa-verifier verify-artifact az-mpf_0.8.5_darwin_arm64.tar.gz   --provenance-path multiple.intoto.jsonl   --source-uri github.com/maniSbindra/az-mpf  --source-tag v0.8.5
+$ /PATH_TO_VERIFER/slsa-verifier verify-artifact az-mpf_0.9.0_darwin_arm64.tar.gz   --provenance-path multiple.intoto.jsonl   --source-uri github.com/maniSbindra/az-mpf  --source-tag v0.9.0
 
 Verified signature against tlog entry index 76002620 at URL: https://rekor.sigstore.dev/api/v1/log/entries/24296fb24b8ad77ae67470bb23a7a809a475c46078739a61725936641b76508ac420e02e217475de
 Verified build using builder "https://github.com/slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@refs/tags/v1.9.0" at commit 648fe797c5b5253360ae1c6e60bd9521544209bc
-Verifying artifact az-mpf_0.8.5_darwin_arm64.tar.gz: PASSED
+Verifying artifact az-mpf_0.9.0_darwin_arm64.tar.gz: PASSED
 
 PASSED: Verified SLSA provenance
 ```
