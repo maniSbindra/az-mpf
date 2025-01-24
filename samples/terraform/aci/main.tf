@@ -1,20 +1,5 @@
-# ---------------------------------------------------------------------------------------------------------------------
-# DEPLOY AN AZURE CONTAINER Instance
-# This is an example of how to deploy an Azure Container Instance
-# See test/terraform_azure_aci_example_test.go for how to write automated tests for this code.
-# ---------------------------------------------------------------------------------------------------------------------
-
-# ------------------------------------------------------------------------------
-# CONFIGURE OUR AZURE CONNECTION
-# ------------------------------------------------------------------------------
 
 terraform {
-#   required_providers {
-#     azurerm = {
-#       version = "~>2.29.0"
-#       source  = "hashicorp/azurerm"
-#     }
-#   }
 
 }
 
@@ -23,30 +8,28 @@ provider "azurerm" {
   skip_provider_registration = "true"
 }
 
-# ---------------------------------------------------------------------------------------------------------------------
-# DEPLOY A RESOURCE GROUP
-# ---------------------------------------------------------------------------------------------------------------------
-
-# add random id to resource group name to avoid conflicts
 resource "random_id" "rg" {
   byte_length = 8
 }
+
+resource "random_integer" "rnd_num" {
+  min = 10000
+  max = 30000
+}
+
 resource "azurerm_resource_group" "rg" {
   name     = "rg-${random_id.rg.hex}"
   location = var.location
 }
 
-# ---------------------------------------------------------------------------------------------------------------------
-# DEPLOY AN AZURE CONTAINER INSTANCE
-# ---------------------------------------------------------------------------------------------------------------------
 
 resource "azurerm_container_group" "aci" {
-  name                = "aci${var.postfix}"
+  name                = "aci${random_integer.rnd_num.result}"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
 
   ip_address_type = "Public"
-  dns_name_label  = "aci${var.postfix}"
+  dns_name_label  = "aci${random_integer.rnd_num.result}"
   os_type         = "Linux" 
 
   container {
