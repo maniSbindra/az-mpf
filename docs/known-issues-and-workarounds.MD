@@ -8,5 +8,5 @@ Creation of certain resources, like the application insights resource, also invo
 
 ### Billing Features Payload Error
 
-This issue is also related to the the [Github Issue](https://github.com/hashicorp/terraform-provider-azurerm/issues/27961#issuecomment-2520407658). The utility retries the request to workaround this issue.
+This issue is also related to the [Github Issue](https://github.com/hashicorp/terraform-provider-azurerm/issues/27961#issuecomment-2520407658). The utility retries the request to workaround this issue.
 
