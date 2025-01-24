@@ -78,7 +78,7 @@ The commands can be used with flags or environment variables. The following are 
 | tfPath               | MPF_TFPATH               | Required           | Path to the Terraform executable                                                                             |
 | workingDir           | MPF_WORKINGDIR           | Required           | Path to the Terraform module directory                                                                             |
 | varFilePath          | MPF_VARFILEPATH          | Optional           | Path to the Terraform variables file                                                                             |
-| importExistingResourcesToState | MPF_IMPORTEXISTINGRESOURCESTOSTATE | Optional | Default Value is true. This required in for some scenarios as described in the [Known Issues - Import Errors](./docs/known-issues-and-workarounds.MD#existing-resource--import-errors) |
+| importExistingResourcesToState | MPF_IMPORTEXISTINGRESOURCESTOSTATE | Optional | Default Value is true. This is required for some scenarios as described in the [Known Issues - Import Errors](./docs/known-issues-and-workarounds.MD#existing-resource--import-errors) |
 | targetModule        | MPF_TARGETMODULE         | Optional           | Target module to be used for the Terraform deployment |                                                                             |
 
 
