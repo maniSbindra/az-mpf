@@ -3,6 +3,10 @@ name: Terraform e2e tests
 on:
   workflow_dispatch:
 
+  schedule:
+    - cron: '0 2 * * *'
+
+
 permissions:
   id-token: write
   contents: read
