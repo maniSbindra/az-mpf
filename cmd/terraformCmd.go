@@ -18,9 +18,11 @@ import (
 )
 
 var (
-	flgTFPath      string
-	flgWorkingDir  string
-	flgVarFilePath string
+	flgTFPath                         string
+	flgWorkingDir                     string
+	flgVarFilePath                    string
+	flgImportExistingResourcesToState bool
+	flgTargetModule                   string
 )
 
 // terraformCmd represents the terraform command
@@ -47,6 +49,9 @@ func NewTerraformCommand() *cobra.Command {
 	terraformCmd.MarkFlagRequired("workingDir")
 
 	terraformCmd.Flags().StringVarP(&flgVarFilePath, "varFilePath", "", "", "Path to Terraform Variable File")
+	terraformCmd.Flags().BoolVarP(&flgImportExistingResourcesToState, "importExistingResourcesToState", "", true, "On existing resource error, import existing resources into to Terraform State. This will also destroy the imported resources before MPF execution completes.")
+
+	terraformCmd.Flags().StringVarP(&flgTargetModule, "targetModule", "", "", "The Terraform module to Target Module to run MPF on")
 	// terraformCmd.MarkFlagRequired("varFilePath")
 
 	return terraformCmd
@@ -59,6 +64,7 @@ func getMPFTerraform(cmd *cobra.Command, args []string) {
 	log.Infof("TFPath: %s\n", flgTFPath)
 	log.Infof("WorkingDir: %s\n", flgWorkingDir)
 	log.Infof("VarFilePath: %s\n", flgVarFilePath)
+	log.Infof("ImportExistingResourcesToState: %t\n", flgImportExistingResourcesToState)
 
 	// validate if working directory exists
 	if _, err := os.Stat(flgWorkingDir); os.IsNotExist(err) {
@@ -104,10 +110,9 @@ func getMPFTerraform(cmd *cobra.Command, args []string) {
 
 	var deploymentAuthorizationCheckerCleaner usecase.DeploymentAuthorizationCheckerCleaner
 	var mpfService *usecase.MPFService
-
 	initialPermissionsToAdd := []string{"Microsoft.Resources/deployments/read", "Microsoft.Resources/deployments/write"}
 	permissionsToAddToResult := []string{"Microsoft.Resources/deployments/read", "Microsoft.Resources/deployments/write"}
-	deploymentAuthorizationCheckerCleaner = terraform.NewTerraformAuthorizationChecker(flgWorkingDir, flgTFPath, flgVarFilePath)
+	deploymentAuthorizationCheckerCleaner = terraform.NewTerraformAuthorizationChecker(flgWorkingDir, flgTFPath, flgVarFilePath, flgImportExistingResourcesToState, flgTargetModule)
 	mpfService = usecase.NewMPFService(ctx, rgManager, spRoleAssignmentManager, deploymentAuthorizationCheckerCleaner, mpfConfig, initialPermissionsToAdd, permissionsToAddToResult, false, true, false)
 
 	displayOptions := getDislayOptions(flgShowDetailedOutput, flgJSONOutput, mpfConfig.ResourceGroup.ResourceGroupResourceID)

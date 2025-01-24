@@ -8,6 +8,10 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+const BillingFeaturesPayloadError = "CurrentBillingFeatures is required in payload"
+
+// const AuthorizationPermissionMismatchErr = "AuthorizationPermissionMismatch"
+
 type MPFService struct {
 	ctx                                 context.Context
 	rgManager                           ResourceGroupManager
@@ -103,15 +107,31 @@ func (s *MPFService) GetMinimumPermissionsRequired() (domain.MPFResult, error) {
 	}
 	// s.requiredPermissions[s.mpfConfig.ResourceGroup.ResourceGroupResourceID] = append(s.requiredPermissions[s.mpfConfig.ResourceGroup.ResourceGroupResourceID], s.permissionsToAddToResult...)
 
-	maxIterations := 15
+	maxIterations := 50
 	iterCount := 0
 	for {
 		authErrMesg, err := s.deploymentAuthCheckerCleaner.GetDeploymentAuthorizationErrors(s.mpfConfig)
+
+		log.Debugf("Iteration Number: %d \n", iterCount)
 
 		if authErrMesg == "" && err == nil {
 			log.Infoln("Authorization Successful")
 			break
 		}
+
+		log.Debugln("authErrMesg: ", authErrMesg)
+
+		// Temporary fix to workaround issue https://github.com/hashicorp/terraform-provider-azurerm/issues/27961
+		// It is observed only once, so retrying works
+		if err == nil && strings.Contains(authErrMesg, BillingFeaturesPayloadError) {
+			log.Warnf("Billing Features Payload Error: %v, retrying.... \n", err)
+			continue
+		}
+
+		// if err == nil && strings.Contains(err.Error(), AuthorizationPermissionMismatchErr) {
+		// 	log.Warnf("AuthrorizationPermissionMismatchErr Error: %v, retrying.... \n", err)
+		// 	continue
+		// }
 
 		if err != nil {
 			log.Warnf("Non Authorization error received: %v \n", err)

@@ -64,7 +64,7 @@ jobs:
           popd
 
           go install github.com/jstemmer/go-junit-report@latest
-          go test ./e2eTests -v -timeout 20m -run TestTerraform | tee TestResults-${{ matrix.go-version }}.txt
+          go test ./e2eTests -v -timeout 30m -run TestTerraform | tee TestResults-${{ matrix.go-version }}.txt
           cat TestResults-${{ matrix.go-version }}.txt | go-junit-report -set-exit-code > TestResults-${{ matrix.go-version }}.xml
           
       - name: Upload Go test results
