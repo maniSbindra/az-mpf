@@ -23,7 +23,7 @@ jobs:
       - name: Test with Go
         run: |
           go install github.com/jstemmer/go-junit-report@latest
-          go test -v ./pkg/domain ./pkg/infrastructure/ARMTemplateShared ./pkg/infrastructure/mpfSharedUtils | go-junit-report -set-exit-code > TestResults-${{ matrix.go-version }}.xml
+          go test -v ./pkg/domain ./pkg/infrastructure/ARMTemplateShared ./pkg/infrastructure/mpfSharedUtils ./pkg/infrastructure/authorizationCheckers/terraform | go-junit-report -set-exit-code > TestResults-${{ matrix.go-version }}.xml
           # go test -json ./pkg/domain ./pkg/infrastructure/ARMTemplateShared ./pkg/infrastructure/mpfSharedUtils > TestResults-${{ matrix.go-version }}.json
       - name: Upload Go test results
         uses: actions/upload-artifact@v4

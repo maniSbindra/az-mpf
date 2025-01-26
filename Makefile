@@ -26,7 +26,7 @@ build:
 
 test:
 	@echo "Running tests..."
-	$(GOTEST) -v ./pkg/domain ./pkg/infrastructure/ARMTemplateShared ./pkg/infrastructure/mpfSharedUtils 
+	$(GOTEST) -v ./pkg/domain ./pkg/infrastructure/ARMTemplateShared ./pkg/infrastructure/mpfSharedUtils ./pkg/infrastructure/authorizationCheckers/terraform
 
 clean:
 	@echo "Cleaning..."

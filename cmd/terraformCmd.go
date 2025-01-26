@@ -25,6 +25,8 @@ var (
 	flgTargetModule                   string
 )
 
+const FoundPermissionsFromFailedRunFilename = ".permissionsFromFailedRun.json"
+
 // terraformCmd represents the terraform command
 // var
 
@@ -42,7 +44,6 @@ func NewTerraformCommand() *cobra.Command {
 	}
 
 	terraformCmd.Flags().StringVarP(&flgTFPath, "tfPath", "", "", "Path to Terraform Executable")
-	// viper.BindEnv("executablePath", "TF_PATH")
 	terraformCmd.MarkFlagRequired("tfPath")
 
 	terraformCmd.Flags().StringVarP(&flgWorkingDir, "workingDir", "", "", "Path to Terraform Working Directory")
@@ -52,7 +53,6 @@ func NewTerraformCommand() *cobra.Command {
 	terraformCmd.Flags().BoolVarP(&flgImportExistingResourcesToState, "importExistingResourcesToState", "", true, "On existing resource error, import existing resources into to Terraform State. This will also destroy the imported resources before MPF execution completes.")
 
 	terraformCmd.Flags().StringVarP(&flgTargetModule, "targetModule", "", "", "The Terraform module to Target Module to run MPF on")
-	// terraformCmd.MarkFlagRequired("varFilePath")
 
 	return terraformCmd
 }
@@ -110,8 +110,24 @@ func getMPFTerraform(cmd *cobra.Command, args []string) {
 
 	var deploymentAuthorizationCheckerCleaner usecase.DeploymentAuthorizationCheckerCleaner
 	var mpfService *usecase.MPFService
+
 	initialPermissionsToAdd := []string{"Microsoft.Resources/deployments/read", "Microsoft.Resources/deployments/write"}
 	permissionsToAddToResult := []string{"Microsoft.Resources/deployments/read", "Microsoft.Resources/deployments/write"}
+
+	// Check if permissions file from previous failed run exists
+	if terraform.DoesTFFileExist(flgWorkingDir, FoundPermissionsFromFailedRunFilename) {
+		prevResult, err := terraform.LoadMPFResultFromFile(flgWorkingDir, FoundPermissionsFromFailedRunFilename)
+		if err != nil {
+			log.Warnf("Error loading permissions from previous failed run: %v\n, continuing....", err)
+		}
+		prevRunFoundPermissions := prevResult.RequiredPermissions[""]
+		if len(prevRunFoundPermissions) > 0 {
+			log.Warnf("Found permissions from previous failed run: %v\n Adding the Permissions....", prevRunFoundPermissions)
+			initialPermissionsToAdd = append(initialPermissionsToAdd, prevRunFoundPermissions...)
+			permissionsToAddToResult = append(permissionsToAddToResult, prevRunFoundPermissions...)
+		}
+	}
+
 	deploymentAuthorizationCheckerCleaner = terraform.NewTerraformAuthorizationChecker(flgWorkingDir, flgTFPath, flgVarFilePath, flgImportExistingResourcesToState, flgTargetModule)
 	mpfService = usecase.NewMPFService(ctx, rgManager, spRoleAssignmentManager, deploymentAuthorizationCheckerCleaner, mpfConfig, initialPermissionsToAdd, permissionsToAddToResult, false, true, false)
 
@@ -121,9 +137,15 @@ func getMPFTerraform(cmd *cobra.Command, args []string) {
 	if err != nil {
 		if len(mpfResult.RequiredPermissions) > 0 {
 			fmt.Println("Error occurred while getting minimum permissions required. However, some permissions were identified prior to the error.")
+			_ = terraform.SaveMPFResultsToFile(flgWorkingDir, FoundPermissionsFromFailedRunFilename, mpfResult)
+
 			displayResult(mpfResult, displayOptions)
 		}
 		log.Fatal(err)
+	}
+
+	if terraform.DoesTFFileExist(flgWorkingDir, FoundPermissionsFromFailedRunFilename) {
+		_ = terraform.DeleteTFFile(flgWorkingDir, FoundPermissionsFromFailedRunFilename)
 	}
 
 	displayResult(mpfResult, displayOptions)
