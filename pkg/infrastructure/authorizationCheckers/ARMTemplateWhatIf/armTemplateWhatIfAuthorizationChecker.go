@@ -232,7 +232,7 @@ func (a *armWhatIfConfig) GetWhatIfResp(whatIfRespLoc string, bearerToken string
 	req.Header.Add("Authorization", "Bearer "+bearerToken)
 
 	var respBody string
-	maxRetries := 20
+	maxRetries := 50
 	retryCount := 0
 	for {
 		// make request
@@ -259,7 +259,7 @@ func (a *armWhatIfConfig) GetWhatIfResp(whatIfRespLoc string, bearerToken string
 		retryCount++
 		if retryCount == maxRetries {
 			log.Warnf("Whatif Results Response Body is empty after %d retries, returning empty response body", maxRetries)
-			return "", errors.New("Whatif Results Response Body is empty after 10 retries")
+			return "", fmt.Errorf("Whatif Results Response Body is empty after %d retries", maxRetries)
 		}
 
 		log.Infoln("Whatif Results Response Body is empty, retrying in a bit...")
