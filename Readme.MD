@@ -2,6 +2,10 @@
 
 This utility finds the minimum permissions required for a given Azure deployment. This can help when you need to figure out the details of what permissions a service principal or managed identity will need to deploy a given ARM template, bicep file or Terrform module. Similarly when assigning a Service Principal / Managed Identity to an Azure Policy Assignment, this utility can help you figure out the minimum permissions required by the Service Principal / Managed Identity to enforce/remediate the policy. It is recommended that the utility is used in a development or test environment to find the minimum permissions required.
 
+## Note
+
+**This GitHub repository (manisbindra/az-mpf) is now read-only. It will be transferred to a new location soon.** Please check back here for updated details.
+
 ## How It works
 
 The overview of how this utility works is as follows:
